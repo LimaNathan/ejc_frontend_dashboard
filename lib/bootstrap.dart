@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -29,6 +30,13 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   Bloc.observer = const AppBlocObserver();
 
   // Add cross-flavor configuration here
+  await Supabase.initialize(
+    anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
+    url: const String.fromEnvironment('SUPABASE_URL'),
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.implicit,
+    ),
+  );
 
   runApp(await builder());
 }
