@@ -8,9 +8,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RemoteAuthRepository implements AuthRepository {
-  RemoteAuthRepository(this._supabaseService);
-
-  final SupabaseService _supabaseService;
+  final SupabaseService _supabaseService = SupabaseService();
 
   @override
   AsyncResult<AuthResponse> login(Credentials credentials) async {
