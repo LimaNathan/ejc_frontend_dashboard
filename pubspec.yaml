@@ -23,11 +23,17 @@ dependencies:
 
 dev_dependencies:
   bloc_test: ^9.1.7
+  build_runner: ^2.4.13
+  build_verify: any
   flutter_test:
     sdk: flutter
+  go_router_builder: any
   mocktail: ^1.0.4
   very_good_analysis: ^6.0.0
 
 flutter:
   uses-material-design: true
   generate: true
+
+assets:
+  - assets/

@@ -1,6 +1,5 @@
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/auth_repository.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/remote_auth_repository.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class Providers {
@@ -8,7 +7,7 @@ class Providers {
     _providers.addAll(
       [
         Provider<AuthRepository>(create: (_) => RemoteAuthRepository()),
-        Provider<AuthViewModel>(create: (_) => AuthViewModel()),
+        // Provider(create: (context) => AuthViewModel(context.read())),
       ],
     );
   }

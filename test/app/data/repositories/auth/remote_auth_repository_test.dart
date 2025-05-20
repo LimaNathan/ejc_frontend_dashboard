@@ -1,4 +1,3 @@
-import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/auth_repository.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/remote_auth_repository.dart';
 import 'package:ejc_frontend_dashboard/app/data/services/supabase_service.dart';
@@ -33,7 +32,7 @@ void main() {
   );
   setUp(() {
     mockSupabaseService = MockSupabaseService();
-    authRepository = RemoteAuthRepository(mockSupabaseService);
+    authRepository = RemoteAuthRepository();
   });
 
   setUpAll(() {
