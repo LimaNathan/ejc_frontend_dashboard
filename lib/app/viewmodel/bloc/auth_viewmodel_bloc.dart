@@ -10,15 +10,25 @@ class AuthViewmodelBloc extends Bloc<AuthViewmodelEvent, AuthViewmodelState> {
   AuthViewmodelBloc(
     this._authRepository,
   ) : super(AuthInitial()) {
-    on<LoginEvent>((event, emit) async {
-      emit(AuthLoading());
-      final response = await _authRepository.login(event.credentials);
-
-      response.fold(
-        (success) => emit(AuthSuccess()),
-        (failure) => emit(AuthError(failure.toString())),
-      );
-    });
+    on<LoginEvent>(_onLogin);
   }
+
+  Future<void> _onLogin(
+    LoginEvent event,
+    Emitter<AuthViewmodelState> emit,
+  ) async {
+    emit(AuthLoading());
+    final response = await _authRepository.login(event.credentials);
+
+    response.fold(
+      (success) {
+        emit(AuthSuccess());
+      },
+      ( failure) {
+        emit(AuthError(failure.toString()));
+      },
+    );
+  }
+
   final AuthRepository _authRepository;
 }

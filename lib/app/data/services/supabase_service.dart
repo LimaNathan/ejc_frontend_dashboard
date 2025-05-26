@@ -7,18 +7,22 @@ class SupabaseService {
   final Supabase _supabase = Supabase.instance;
 
   AsyncResult<AuthResponse> login(Credentials credentials) async {
-    return _supabase //
-        .client
-        .auth
-        .signInWithPassword(
-          email: credentials.email,
-          password: credentials.password,
-        )
-        .onError(
-          (e, s) async => //
-              throw AppAuthException(e.toString(), s),
-        )
-        .then(Success.new);
+    try {
+      final response = await _supabase //
+          .client
+          .auth
+          .signInWithPassword(
+        email: credentials.email,
+        password: credentials.password,
+      )
+          .onError((handleError, stackTrace) {
+        throw AppAuthException(handleError.toString());
+      });
+
+      return Success(response);
+    } on AppAuthException catch (e) {
+      return Failure(e);
+    }
   }
 
   AsyncResult<Unit> logout() async {

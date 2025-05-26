@@ -13,4 +13,8 @@ abstract class AppException implements Exception {
       return '$runtimeType: $message';
     }
   }
+
+  String toFormattedString(){
+    return '$runtimeType: $message';
+  }
 }

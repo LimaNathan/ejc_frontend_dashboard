@@ -17,8 +17,8 @@ class RemoteAuthRepository implements AuthRepository {
       return validator //
           .validateResult(credentials)
           .flatMap(_supabaseService.login);
-    } catch (e, s) {
-      return Failure(AppAuthException(e.toString(), s));
+    } catch (e) {
+      return Failure(AppAuthException(e.toString()));
     }
   }
 

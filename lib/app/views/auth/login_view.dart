@@ -43,15 +43,6 @@ class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
       });
     }
 
-    void onPressed() {
-      LoginEvent(
-        Credentials(
-          email: emailEC.text,
-          password: passwordEC.text,
-        ),
-      );
-    }
-
     return BlocProvider(
       create: (context) => AuthViewmodelBloc(context.read()),
       child: BlocBuilder<AuthViewmodelBloc, AuthViewmodelState>(
@@ -61,19 +52,24 @@ class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
           }
 
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                behavior: SnackBarBehavior.floating,
-                animation: _bounceAnimation,
-                content: Text(
-                  state.message,
+            LoadingOverlay.hide();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  animation: _bounceAnimation,
+                  content: Text(
+                    state.message,
+                  ),
                 ),
-              ),
-            );
+              );
+            });
           }
 
           if (state is AuthLoading) {
-            LoadingOverlay.show(context);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              LoadingOverlay.show(context);
+            });
           }
           return Scaffold(
             body: Center(
@@ -103,7 +99,16 @@ class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: onPressed,
+                      onPressed: () {
+                        context.read<AuthViewmodelBloc>().add(
+                              LoginEvent(
+                                Credentials(
+                                  email: emailEC.text,
+                                  password: passwordEC.text,
+                                ),
+                              ),
+                            );
+                      },
                       child: const Text('Entrar'),
                     ),
                   ],

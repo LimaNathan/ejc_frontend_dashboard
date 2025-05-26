@@ -26,7 +26,7 @@ class LoadingOverlay {
             Center(
               child: LoadingWithTypingEffect(
                 image: Image.asset(
-                  'assets/logo_ejc.png',
+                  'assets/logo_ejc.jpeg',
                   width: width * .25,
                 ),
                 typingLabel: typingLabel ?? 'Carregando ',

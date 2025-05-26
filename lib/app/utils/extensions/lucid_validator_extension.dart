@@ -9,6 +9,6 @@ extension LucidValidatorExtension<T extends Object> on LucidValidator<T> {
       return Success(value);
     }
 
-    return Failure(Exception(result.exceptions.first));
+    return Failure(Exception(result.exceptions.first.message));
   }
 }
