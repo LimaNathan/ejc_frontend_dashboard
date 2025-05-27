@@ -2,7 +2,7 @@ import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/sho
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
 import 'package:ejc_frontend_dashboard/app/utils/overlays/loading_overlay.dart';
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/bloc/auth_viewmodel_bloc.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
 import 'package:ejc_frontend_dashboard/app/views/auth/components/auth_form.dart';
 import 'package:ejc_frontend_dashboard/app/views/auth/components/login_backgroud.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +16,7 @@ class LoginView extends StatefulWidget {
   State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -52,12 +47,16 @@ class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
           }
 
           if (state is AuthSuccess) {
-            WidgetsBinding.instance.addPostFrameCallback(
+            WidgetsBinding //
+                .instance
+                .addPostFrameCallback(
               (_) => context.go(ConstantRoutes.homeView),
             );
           }
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+            backgroundColor: Theme.of(context) //
+                .colorScheme
+                .onPrimary,
             body: const Center(
               child: Row(
                 children: [

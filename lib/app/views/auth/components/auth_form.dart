@@ -1,5 +1,5 @@
 import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/bloc/auth_viewmodel_bloc.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,10 @@ class _AuthFormState extends State<AuthForm> {
               Text(
                 'Sistema de Gerenciamento de Encontreiros',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primaryFixedDim,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 100),
                     ),
               ),
             ],

@@ -12,6 +12,7 @@ class AuthViewmodelBloc extends Bloc<AuthViewmodelEvent, AuthViewmodelState> {
   ) : super(AuthInitial()) {
     on<LoginEvent>(_onLogin);
   }
+  final AuthRepository _authRepository;
 
   Future<void> _onLogin(
     LoginEvent event,
@@ -24,11 +25,9 @@ class AuthViewmodelBloc extends Bloc<AuthViewmodelEvent, AuthViewmodelState> {
       (success) {
         emit(AuthSuccess());
       },
-      ( failure) {
+      (failure) {
         emit(AuthError(failure.toString()));
       },
     );
   }
-
-  final AuthRepository _authRepository;
 }

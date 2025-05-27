@@ -27,7 +27,7 @@ class LoadingOverlay {
               child: LoadingWithTypingEffect(
                 image: Image.asset(
                   'assets/logo_ejc.jpeg',
-                  width: width * .25,
+                  width: width * .15,
                 ),
                 typingLabel: typingLabel ?? 'Carregando ',
               ),

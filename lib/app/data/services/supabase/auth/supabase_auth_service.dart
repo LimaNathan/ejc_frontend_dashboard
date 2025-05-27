@@ -3,7 +3,7 @@ import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SupabaseService {
+class SupabaseAuthService {
   final Supabase _supabase = Supabase.instance;
 
   AsyncResult<AuthResponse> login(Credentials credentials) async {
@@ -38,15 +38,19 @@ class SupabaseService {
   }
 
   AsyncResult<AuthResponse> register(Credentials credentials) async {
-    return _supabase //
+    final response = await _supabase //
         .client
         .auth
-        .signUp(email: credentials.email, password: credentials.password)
-        .onError(
-          (e, s) async => //
-              throw AppAuthException(e.toString(), s),
+        .signUp(
+          email: credentials.email,
+          password: credentials.password,
         )
-        .then(Success.new);
+        .onError(
+          (e, s) => //
+              throw AppAuthException(e.toString(), s),
+        );
+
+    return Success(response);
   }
 
   AsyncResult<User> getUser() async {

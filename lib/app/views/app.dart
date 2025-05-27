@@ -14,7 +14,11 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: providersSource.providers,
       child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: routes,
         theme: ThemeData(
+          useMaterial3: true,
           textTheme: const TextTheme(
             headlineLarge: TextStyle(
               fontSize: 24,
@@ -67,11 +71,7 @@ class App extends StatelessWidget {
                 .colorScheme
                 .inversePrimary,
           ),
-          useMaterial3: true,
         ),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: routes,
       ),
     );
   }

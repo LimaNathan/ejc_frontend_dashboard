@@ -1,6 +1,6 @@
 import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/auth_repository.dart';
-import 'package:ejc_frontend_dashboard/app/data/services/supabase_service.dart';
+import 'package:ejc_frontend_dashboard/app/data/services/supabase/auth/supabase_auth_service.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
 import 'package:ejc_frontend_dashboard/app/domains/validators/credentials_validator.dart';
 import 'package:ejc_frontend_dashboard/app/utils/extensions/lucid_validator_extension.dart';
@@ -8,7 +8,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RemoteAuthRepository implements AuthRepository {
-  final SupabaseService _supabaseService = SupabaseService();
+  final SupabaseAuthService _supabaseService = SupabaseAuthService();
 
   @override
   AsyncResult<AuthResponse> login(Credentials credentials) async {
