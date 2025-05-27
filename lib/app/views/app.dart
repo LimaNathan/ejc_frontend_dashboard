@@ -9,11 +9,59 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     final providersSource = Providers();
     return MultiProvider(
       providers: providersSource.providers,
       child: MaterialApp.router(
         theme: ThemeData(
+          textTheme: const TextTheme(
+            headlineLarge: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            headlineMedium: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            headlineSmall: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+            ),
+            bodySmall: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            activeIndicatorBorder: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          filledButtonTheme: FilledButtonThemeData(
+            style: ButtonStyle(
+              minimumSize: WidgetStatePropertyAll<Size>(
+                Size(size.width * 0.5, 50),
+              ),
+              shape: WidgetStatePropertyAll<OutlinedBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
           appBarTheme: AppBarTheme(
             backgroundColor: Theme.of(context) //
                 .colorScheme

@@ -1,8 +1,13 @@
-import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
+import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
+import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
 import 'package:ejc_frontend_dashboard/app/utils/overlays/loading_overlay.dart';
+import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/bloc/auth_viewmodel_bloc.dart';
+import 'package:ejc_frontend_dashboard/app/views/auth/components/auth_form.dart';
+import 'package:ejc_frontend_dashboard/app/views/auth/components/login_backgroud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -12,37 +17,13 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
-  late AnimationController _bounceController;
-  late Animation<double> _bounceAnimation;
-
-  final formKey = GlobalKey<FormState>();
-  final emailEC = TextEditingController();
-  final passwordEC = TextEditingController();
-
-  bool obscureText = true;
-
   @override
   void initState() {
     super.initState();
-
-    _bounceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-
-    _bounceAnimation = Tween<double>(begin: 0.5, end: 1).animate(
-      CurvedAnimation(parent: _bounceController, curve: Curves.bounceIn),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    void changeObscureText() {
-      setState(() {
-        obscureText = !obscureText;
-      });
-    }
-
     return BlocProvider(
       create: (context) => AuthViewmodelBloc(context.read()),
       child: BlocBuilder<AuthViewmodelBloc, AuthViewmodelState>(
@@ -53,66 +34,36 @@ class _LoginViewState extends State<LoginView> with TickerProviderStateMixin {
 
           if (state is AuthError) {
             LoadingOverlay.hide();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  behavior: SnackBarBehavior.floating,
-                  animation: _bounceAnimation,
-                  content: Text(
-                    state.message,
-                  ),
-                ),
-              );
-            });
+            WidgetsBinding //
+                .instance
+                .addPostFrameCallback(
+              (_) => showCustomSnackbar(
+                context,
+                message: state.message,
+                type: SnackbarType.error,
+              ),
+            );
           }
 
           if (state is AuthLoading) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              LoadingOverlay.show(context);
-            });
+            WidgetsBinding //
+                .instance
+                .addPostFrameCallback((_) => LoadingOverlay.show(context));
+          }
+
+          if (state is AuthSuccess) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => context.go(ConstantRoutes.homeView),
+            );
           }
           return Scaffold(
-            body: Center(
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      key: const ValueKey('user'),
-                      controller: emailEC,
-                      decoration: const InputDecoration(
-                        label: Text('Usuário'),
-                      ),
-                    ),
-                    TextFormField(
-                      key: const ValueKey('password'),
-                      obscureText: obscureText,
-                      controller: passwordEC,
-                      decoration: InputDecoration(
-                        label: const Text('Senha'),
-                        suffix: IconButton(
-                          onPressed: changeObscureText,
-                          icon: Icon(
-                            obscureText ? Icons.lock : Icons.lock_open,
-                          ),
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<AuthViewmodelBloc>().add(
-                              LoginEvent(
-                                Credentials(
-                                  email: emailEC.text,
-                                  password: passwordEC.text,
-                                ),
-                              ),
-                            );
-                      },
-                      child: const Text('Entrar'),
-                    ),
-                  ],
-                ),
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+            body: const Center(
+              child: Row(
+                children: [
+                  LoginBackground(),
+                  AuthForm(),
+                ],
               ),
             ),
           );
