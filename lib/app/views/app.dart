@@ -54,10 +54,22 @@ class App extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              minimumSize: WidgetStatePropertyAll<Size>(
+                Size(size.width * 0.3, 50),
+              ),
+              shape: WidgetStatePropertyAll<OutlinedBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
           filledButtonTheme: FilledButtonThemeData(
             style: ButtonStyle(
               minimumSize: WidgetStatePropertyAll<Size>(
-                Size(size.width * 0.5, 50),
+                Size(size.width * 0.3, 50),
               ),
               shape: WidgetStatePropertyAll<OutlinedBorder>(
                 RoundedRectangleBorder(

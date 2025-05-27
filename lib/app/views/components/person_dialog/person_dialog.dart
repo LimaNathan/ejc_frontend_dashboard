@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
+import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/skills_card.dart';
+import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/was_worked_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
@@ -8,9 +10,11 @@ import 'package:intl/intl.dart';
 class PersonDialog extends StatelessWidget {
   const PersonDialog({
     required this.person,
+    this.isAddingToTeam = false,
     super.key,
   });
   final PersonModel person;
+  final bool? isAddingToTeam;
 
   @override
   Widget build(BuildContext context) {
@@ -106,18 +110,57 @@ class PersonDialog extends StatelessWidget {
                 ),
               ],
             ),
-            const Divider(),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: size.height * 0.02,
+              ),
+              child: const Divider(),
+            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Encontros que serviu:',
                       style: textTheme.titleLarge,
                     ),
+                    WasWorkedCard(person: person),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Aptidões:',
+                      style: textTheme.titleLarge,
+                    ),
+                    SkillsCard(person: person),
                   ],
                 ),
               ],
+            ),
+            const Spacer(),
+            Visibility(
+              visible: isAddingToTeam!,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancelar'),
+                  ),
+                  FilledButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Adicionar na equipe',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

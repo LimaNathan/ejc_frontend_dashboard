@@ -36,13 +36,19 @@ class _HomeViewState extends State<HomeView> {
       teams: [
         TeamParticipationModel(
           encontro: '5',
-          team: '5',
+          team: 'Círculo',
           isCoordinator: false,
+        ),
+        TeamParticipationModel(
+          encontro: '4',
+          team: 'Compras',
+          isCoordinator: true,
         ),
       ],
     );
 
-    final colorScheme = Theme.of(context).colorScheme;
+    // final colorScheme = Theme.of(context).colorScheme;
+
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     return BlocProvider(
@@ -118,8 +124,9 @@ class _HomeViewState extends State<HomeView> {
                             onTap: () {
                               showDialog<void>(
                                 context: context,
-                                builder: (context) =>
-                                    PersonDialog(person: person),
+                                builder: (context) => PersonDialog(
+                                  person: person,
+                                ),
                               );
                             },
                             child: Card(
