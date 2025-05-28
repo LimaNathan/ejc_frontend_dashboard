@@ -10,6 +10,10 @@ part 'home_viewmodel_state.dart';
 class HomeViewmodelBloc extends Bloc<HomeViewmodelEvent, HomeViewmodelState> {
   HomeViewmodelBloc(this._homeRepository) : super(HomeInitial()) {
     on<FetchAllDataEvent>(_onFetchAllData);
+    on<FetchSilenceAllData>(_onFetchSilenceAllData);
+    _homeRepository.listenToUserChanges((payload) {
+      add(FetchSilenceAllData());
+    });
   }
 
   final HomeRepository _homeRepository;
@@ -20,6 +24,47 @@ class HomeViewmodelBloc extends Bloc<HomeViewmodelEvent, HomeViewmodelState> {
   ) async {
     emit(HomeLoading());
 
+    final totalAwnsers = await _homeRepository //
+        .fetchAllAwnsers()
+        .fold(
+      (onSuccess) => onSuccess,
+      (onError) {
+        emit(HomeError(onError.toString()));
+        return;
+      },
+    );
+    final untilThreeDaysAwnswers = await _homeRepository //
+        .fetchLastUntilThreeDaysAnwsers()
+        .fold(
+      (onSuccess) => onSuccess,
+      (onError) {
+        emit(HomeError(onError.toString()));
+        return;
+      },
+    );
+
+    final lastAnswers = await _homeRepository //
+        .fetchLastFivePersons()
+        .fold(
+      (onSuccess) => onSuccess,
+      (onError) {
+        emit(HomeError(onError.toString()));
+        return;
+      },
+    );
+
+    final homeData = HomeData(
+      totalAnswers: totalAwnsers,
+      totalAnswersUntilThreeDays: untilThreeDaysAwnswers,
+      lastAnswers: lastAnswers,
+    );
+    emit(HomeSuccess(homeData));
+  }
+
+  Future<void> _onFetchSilenceAllData(
+    FetchSilenceAllData event,
+    Emitter<HomeViewmodelState> emit,
+  ) async {
     final totalAwnsers = await _homeRepository //
         .fetchAllAwnsers()
         .fold(

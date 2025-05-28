@@ -1,9 +1,6 @@
-import 'package:ejc_frontend_dashboard/app/data/repositories/auth/auth_repository.dart';
-import 'package:ejc_frontend_dashboard/app/data/repositories/auth/remote_auth_repository.dart';
-import 'package:ejc_frontend_dashboard/app/data/repositories/home/home_repository.dart';
-import 'package:ejc_frontend_dashboard/app/data/repositories/home/remote_home_repository.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/home/home_viewmodel_bloc.dart';
+import 'package:ejc_frontend_dashboard/app/data/repositories/repositories.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
+
 import 'package:provider/provider.dart';
 
 class Providers {
@@ -21,6 +18,12 @@ class Providers {
         ),
         Provider(
           create: (context) => HomeViewmodelBloc(context.read()),
+        ),
+        Provider<PeopleRepository>(
+          create: (context) => RemotePeopleRepository(),
+        ),
+        Provider(
+          create: (context) => PeopleViewmodelBloc(context.read()),
         ),
       ],
     );

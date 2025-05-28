@@ -1,4 +1,4 @@
-import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
 import 'package:lucid_validation/lucid_validation.dart';
 
 class CredentialsValidator extends LucidValidator<Credentials> {

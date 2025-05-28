@@ -1,4 +1,4 @@
-import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';

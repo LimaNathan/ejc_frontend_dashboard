@@ -6,6 +6,29 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseHomeService {
   final Supabase _supabase = Supabase.instance;
 
+  RealtimeChannel? _channel;
+
+  void listenToUserChanges(
+    void Function(Map<String, dynamic>) onChange,
+  ) {
+    _channel = _supabase.client //
+        .channel('users')
+        .onPostgresChanges(
+          schema: 'public',
+          table: 'users',
+          event: PostgresChangeEvent.all,
+          callback: (payload) => onChange(payload.newRecord),
+        )
+        .subscribe();
+  }
+
+  void disposeListener() {
+    if (_channel != null) {
+      _supabase.client.removeChannel(_channel!);
+      _channel = null;
+    }
+  }
+
   AsyncResult<int> totalAwnsers() async {
     final response = await _supabase //
         .client

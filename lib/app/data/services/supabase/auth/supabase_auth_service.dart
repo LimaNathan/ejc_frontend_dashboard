@@ -1,5 +1,5 @@
 import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
-import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

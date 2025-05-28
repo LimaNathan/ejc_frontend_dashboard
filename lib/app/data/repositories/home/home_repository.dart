@@ -5,4 +5,5 @@ abstract interface class HomeRepository {
   AsyncResult<int> fetchAllAwnsers();
   AsyncResult<int> fetchLastUntilThreeDaysAnwsers();
   AsyncResult<List<PersonModel>> fetchLastFivePersons();
+  void listenToUserChanges(void Function(Map<String, dynamic>) onChange);
 }

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/auth_repository.dart';
-import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
 import 'package:meta/meta.dart';
 
 part 'auth_viewmodel_event.dart';

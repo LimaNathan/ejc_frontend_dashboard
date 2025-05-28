@@ -38,7 +38,7 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
         leading: Padding(
           padding: EdgeInsets.all(size.height * 0.01),
           child: Image.asset(
-            'assets/logo_ejc.jpeg',
+            'assets/logo_ejc.png',
           ),
         ),
         backgroundColor: Colors.transparent,

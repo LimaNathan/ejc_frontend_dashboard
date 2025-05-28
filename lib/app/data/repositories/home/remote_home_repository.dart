@@ -20,4 +20,11 @@ class RemoteHomeRepository implements HomeRepository {
   AsyncResult<List<PersonModel>> fetchLastFivePersons() {
     return _supabaseHomeService.lastFiveAwnsers();
   }
+
+  @override
+  void listenToUserChanges(
+    void Function(Map<String, dynamic> payload) onChange,
+  ) {
+    _supabaseHomeService.listenToUserChanges(onChange);
+  }
 }

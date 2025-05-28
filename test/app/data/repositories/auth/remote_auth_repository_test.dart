@@ -1,7 +1,7 @@
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/auth_repository.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/auth/remote_auth_repository.dart';
 import 'package:ejc_frontend_dashboard/app/data/services/supabase/auth/supabase_auth_service.dart';
-import 'package:ejc_frontend_dashboard/app/domains/dtos/credentials.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:result_dart/result_dart.dart';

@@ -54,7 +54,7 @@ class _LoginBackgroundState extends State<LoginBackground> {
               child: Row(
                 children: [
                   Image.asset(
-                    'assets/logo_ejc.jpeg',
+                    'assets/logo_ejc.png',
                     height: size.height * .025,
                   ),
                   SizedBox(width: size.width * .009),

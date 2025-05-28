@@ -4,3 +4,5 @@ part of 'home_viewmodel_bloc.dart';
 sealed class HomeViewmodelEvent {}
 
 class FetchAllDataEvent extends HomeViewmodelEvent {}
+
+class FetchSilenceAllData extends HomeViewmodelEvent {}
