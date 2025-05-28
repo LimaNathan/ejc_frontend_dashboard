@@ -1,4 +1,5 @@
 import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
+import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -36,5 +37,21 @@ class SupabaseHomeService {
         );
 
     return Success(response.count);
+  }
+
+  AsyncResult<List<PersonModel>> lastFiveAwnsers() async {
+    final response = await _supabase //
+        .client
+        .from('users')
+        .select('*, user_teams(*, teams(*))')
+        .order('created_at', ascending: false)
+        .limit(5)
+        .onError(
+          (handleError, stackTrace) => throw AppSupabaseFetchException(
+            handleError.toString(),
+          ),
+        );
+
+    return Success(response.map(PersonModel.fromJson).toList());
   }
 }

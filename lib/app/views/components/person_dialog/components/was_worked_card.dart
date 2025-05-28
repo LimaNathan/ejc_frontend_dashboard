@@ -20,14 +20,15 @@ class WasWorkedCard extends StatelessWidget {
           horizontal: size.width * 0.02,
           vertical: size.height * 0.01,
         ),
-        width: size.width > 800 ? size.width * 0.4 : size.width * 0.25,
-        height: size.height * 0.15,
+        width: size.width > 800 ? size.width * .3 : size.width * .25,
+        height: size.height * .25,
         child: ListView.builder(
-          itemCount: person.teams.length,
+          itemCount: person.teams!.length,
           itemBuilder: (context, index) {
-            final teams = person.teams[index];
+            final teams = person.teams![index];
             final teamEJC = '${teams.encontro}º EJC:'
-                ' ${teams.team ?? 'Não informado'}';
+                ' ${teams.team ?? 'Não serviu'}';
+
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

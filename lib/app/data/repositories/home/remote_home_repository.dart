@@ -1,7 +1,7 @@
+import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/data/repositories/home/home_repository.dart';
 import 'package:ejc_frontend_dashboard/app/data/services/supabase/home/supabase_home_service.dart';
 import 'package:result_dart/result_dart.dart';
-
 
 class RemoteHomeRepository implements HomeRepository {
   final SupabaseHomeService _supabaseHomeService = SupabaseHomeService();
@@ -14,5 +14,10 @@ class RemoteHomeRepository implements HomeRepository {
   @override
   AsyncResult<int> fetchLastUntilThreeDaysAnwsers() {
     return _supabaseHomeService.totalAwnsersUntilLastThreeDays();
+  }
+
+  @override
+  AsyncResult<List<PersonModel>> fetchLastFivePersons() {
+    return _supabaseHomeService.lastFiveAwnsers();
   }
 }

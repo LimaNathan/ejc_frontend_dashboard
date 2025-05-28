@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
 import 'package:ejc_frontend_dashboard/app/utils/overlays/loading_overlay.dart';
@@ -23,38 +22,11 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
-    final person = PersonModel(
-      aniversario: DateTime(1999),
-      name: 'Teste',
-      circle: 'Verde',
-      ejcNumber: '5',
-      phones: [
-        '123456789',
-        '987654321',
-      ],
-      skills: ['Flutter', 'Dart'],
-      teams: [
-        TeamParticipationModel(
-          encontro: '5',
-          team: 'Círculo',
-          isCoordinator: false,
-        ),
-        TeamParticipationModel(
-          encontro: '4',
-          team: 'Compras',
-          isCoordinator: true,
-        ),
-      ],
-    );
-
-    // final colorScheme = Theme.of(context).colorScheme;
-
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     return BlocProvider(
       create: (context) {
-        final bloc = HomeViewmodelBloc //
-            (context.read())
+        final bloc = HomeViewmodelBloc(context.read())
           ..add(FetchAllDataEvent());
 
         return bloc;
@@ -113,63 +85,84 @@ class _HomeViewState extends State<HomeView> {
                         'Últimos formulários preenchidos',
                         style: textTheme.headlineSmall,
                       ),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          final circle =
-                              'Círculo ${person.circle} ${person.ejcNumber}';
-                          return InkWell(
-                            onTap: () {
-                              showDialog<void>(
-                                context: context,
-                                builder: (context) => PersonDialog(
-                                  person: person,
-                                ),
-                              );
-                            },
-                            child: Card(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                  vertical: size.height * 0.01,
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: size.width * 0.015,
-                                  vertical: size.height * 0.015,
-                                ),
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      child: person.photo != null
-                                          ? Image.memory(
-                                              base64Decode(person.photo!),
-                                            )
-                                          : const Icon(
-                                              HugeIcons.strokeRoundedUserList,
-                                            ),
-                                    ),
-                                    SizedBox(width: size.width * .02),
-                                    Text(
-                                      person.name,
-                                      style: textTheme.labelLarge,
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      '${person.ejcNumber}º EJC',
-                                      style: textTheme.bodySmall,
-                                    ),
-                                    SizedBox(width: size.width * .02),
-                                    Text(
-                                      circle,
-                                      style: textTheme.bodySmall,
-                                    ),
-                                  ],
+                      Visibility(
+                        visible: state.data.lastAnswers != null,
+                        replacement: const Center(
+                          child: Text('Nenhum dado para mostrar'),
+                        ),
+                        child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: state.data.lastAnswers != null
+                              ? state.data.lastAnswers!.length
+                              : 0,
+                          itemBuilder: (context, index) {
+                            final person = state.data.lastAnswers![index];
+                            try {
+                              base64Decode(person.photo!);
+                            } catch (e) {
+                              person.photo = null;
+                            }
+                            final circle =
+                                'Círculo ${person.circle} ${person.ejcNumber}';
+                            return InkWell(
+                              onTap: () {
+                                showDialog<void>(
+                                  context: context,
+                                  builder: (context) => PersonDialog(
+                                    person: person,
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                    vertical: size.height * 0.01,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: size.width * 0.015,
+                                    vertical: size.height * 0.015,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+
+                                      
+                                        child: person.photo != null
+                                            ? ClipOval(
+                                                child: Image.memory(
+                                                  base64Decode(person.photo!),
+                                                  fit: BoxFit.cover,
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                ),
+                                              )
+                                            : const Icon(
+                                                HugeIcons.strokeRoundedUserList,
+                                              ),
+                                      ),
+                                      SizedBox(width: size.width * .02),
+                                      Text(
+                                        person.name,
+                                        style: textTheme.labelLarge,
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        '${person.ejcNumber}º EJC',
+                                        style: textTheme.bodySmall,
+                                      ),
+                                      SizedBox(width: size.width * .02),
+                                      Text(
+                                        circle,
+                                        style: textTheme.bodySmall,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),

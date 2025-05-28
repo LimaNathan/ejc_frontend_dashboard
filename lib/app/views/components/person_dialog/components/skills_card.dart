@@ -20,10 +20,10 @@ class SkillsCard extends StatelessWidget {
           horizontal: size.width * 0.02,
           vertical: size.height * 0.01,
         ),
-        width: size.width > 800 ? size.width * 0.4 : size.width * 0.25,
-        height: size.height * 0.15,
+        width: size.width > 800 ? size.width * 0.3 : size.width * 0.25,
+        height: size.height * .25,
         child: ListView.builder(
-          itemCount: person.teams.length,
+          itemCount: person.skills.length,
           itemBuilder: (context, index) {
             final skill = person.skills[index];
 

@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_dynamic_calls
 
+import 'dart:convert';
+
 import 'package:ejc_frontend_dashboard/app/domains/entities/person_entity.dart';
 
 class PersonModel extends PersonEntity {
@@ -8,9 +10,9 @@ class PersonModel extends PersonEntity {
     required super.circle,
     required super.ejcNumber,
     required super.skills,
-    required super.teams,
     required super.phones,
     required super.aniversario,
+    super.teams,
     super.photo,
   });
 
@@ -27,20 +29,28 @@ class PersonModel extends PersonEntity {
 
   factory PersonModel.fromJson(Map<String, dynamic> json) => PersonModel(
         name: json['nome'] as String,
-        photo: json['foto'] as String,
+        photo: (json['foto'] as String).split(',').last,
         circle: json['circulo'] as String,
         ejcNumber: json['ejc_fez'] as String,
-        aniversario: json['aniversario'] as DateTime,
-        skills: List<String>.from(json['aptidoes'] as Iterable<dynamic>),
-        teams: List<TeamParticipationModel>.from(
-          (json['equipes'] as Iterable).map(
-            (x) => TeamParticipationModel(
-              encontro: x['encontro'] as String,
-              team: x['equipe'] as String,
-              isCoordinator: x['is_coordinator'] as bool,
-            ),
-          ),
+        aniversario: DateTime.parse(json['aniversario'] as String),
+        skills: List<String>.from(
+          json['aptidoes'] is String
+              ? jsonDecode(json['aptidoes'] as String) as List
+              : json['aptidoes'] as List,
         ),
+        teams: (json['user_teams'] != null)
+            ? List<TeamParticipationModel>.from(
+                (json['user_teams'] as Iterable).map(
+                  (x) => TeamParticipationModel(
+                    encontro: (x['encontro'] as int).toString(),
+                    team: x['teams'] != null
+                        ? x['teams']['name'] as String
+                        : null,
+                    isCoordinator: x['is_coordinator'] as bool,
+                  ),
+                ),
+              )
+            : null,
         phones: List<String>.from(json['telefones'] as Iterable<dynamic>),
       );
 
@@ -58,8 +68,8 @@ class PersonModel extends PersonEntity {
 class TeamParticipationModel extends TeamParticipationEntity {
   TeamParticipationModel({
     required super.encontro,
-    required super.team,
     required super.isCoordinator,
+    super.team,
   });
 
   factory TeamParticipationModel.fromEntity(TeamParticipationEntity entity) =>

@@ -39,9 +39,20 @@ class HomeViewmodelBloc extends Bloc<HomeViewmodelEvent, HomeViewmodelState> {
       },
     );
 
+    final lastAnswers = await _homeRepository //
+        .fetchLastFivePersons()
+        .fold(
+      (onSuccess) => onSuccess,
+      (onError) {
+        emit(HomeError(onError.toString()));
+        return;
+      },
+    );
+
     final homeData = HomeData(
       totalAnswers: totalAwnsers,
       totalAnswersUntilThreeDays: untilThreeDaysAwnswers,
+      lastAnswers: lastAnswers,
     );
     emit(HomeSuccess(homeData));
   }

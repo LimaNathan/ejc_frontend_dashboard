@@ -5,8 +5,7 @@ class PersonEntity {
     required this.circle,
     required this.ejcNumber,
     required this.skills,
-    required this.teams,
-    required this.phones,
+    required this.phones, this.teams,
     this.photo,
   });
 
@@ -16,7 +15,7 @@ class PersonEntity {
   DateTime aniversario;
   String ejcNumber;
   List<String> skills;
-  List<TeamParticipationEntity> teams;
+  List<TeamParticipationEntity>? teams;
   List<String> phones;
 }
 
@@ -26,7 +25,6 @@ class TeamParticipationEntity {
     required this.isCoordinator,
     this.team,
   });
-
 
   final String encontro;
   final String? team;

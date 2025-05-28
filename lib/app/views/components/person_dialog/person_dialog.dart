@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 
-class PersonDialog extends StatelessWidget {
+class PersonDialog extends StatefulWidget {
   const PersonDialog({
     required this.person,
     this.isAddingToTeam = false,
@@ -17,13 +17,29 @@ class PersonDialog extends StatelessWidget {
   final bool? isAddingToTeam;
 
   @override
+  State<PersonDialog> createState() => _PersonDialogState();
+}
+
+class _PersonDialogState extends State<PersonDialog> {
+  @override
+  void initState() {
+    super.initState();
+    try {
+      base64Decode(widget.person.photo!);
+    } catch (e) {
+      widget.person.photo = null;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final birthDate = DateFormat('dd/MM/yyyy').format(person.aniversario);
-    final ejcDo = '${person.ejcNumber}º Encontro de Jovens com Cristo';
+    final birthDate =
+        DateFormat('dd/MM/yyyy').format(widget.person.aniversario);
+    final ejcDo = '${widget.person.ejcNumber}º Encontro de Jovens com Cristo';
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -34,14 +50,14 @@ class PersonDialog extends StatelessWidget {
           horizontal: size.width * 0.035,
         ),
         width: size.width * 0.75,
-        height: size.height * 0.75,
+        height: size.height * 0.85,
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  person.name,
+                  widget.person.name,
                   style: textTheme.headlineMedium,
                 ),
                 IconButton(
@@ -57,10 +73,15 @@ class PersonDialog extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  minRadius: size.height * 0.1,
-                  child: person.photo != null
-                      ? Image.memory(
-                          base64Decode(person.photo!),
+                  radius: size.width * 0.07,
+                  child: widget.person.photo != null
+                      ? ClipOval(
+                          child: Image.memory(
+                            base64Decode(widget.person.photo!),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
                         )
                       : const Icon(
                           HugeIcons.strokeRoundedUserList,
@@ -88,7 +109,7 @@ class PersonDialog extends StatelessWidget {
                         style: textTheme.bodyLarge,
                         children: [
                           TextSpan(
-                            text: person.circle,
+                            text: widget.person.circle,
                             style: textTheme.titleSmall,
                           ),
                         ],
@@ -126,7 +147,12 @@ class PersonDialog extends StatelessWidget {
                       'Encontros que serviu:',
                       style: textTheme.titleLarge,
                     ),
-                    WasWorkedCard(person: person),
+                    Visibility(
+                      visible: widget.person.teams != null ||
+                          widget.person.teams!.isNotEmpty,
+                      replacement: const Text('Não serviuu em nenhum encontro'),
+                      child: WasWorkedCard(person: widget.person),
+                    ),
                   ],
                 ),
                 Column(
@@ -136,14 +162,14 @@ class PersonDialog extends StatelessWidget {
                       'Aptidões:',
                       style: textTheme.titleLarge,
                     ),
-                    SkillsCard(person: person),
+                    SkillsCard(person: widget.person),
                   ],
                 ),
               ],
             ),
             const Spacer(),
             Visibility(
-              visible: isAddingToTeam!,
+              visible: widget.isAddingToTeam!,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

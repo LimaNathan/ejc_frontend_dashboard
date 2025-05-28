@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$HomeData {
   int? get totalAnswers => throw _privateConstructorUsedError;
   int? get totalAnswersUntilThreeDays => throw _privateConstructorUsedError;
+  List<PersonModel>? get lastAnswers => throw _privateConstructorUsedError;
 
   /// Create a copy of HomeData
   /// with the given fields replaced by the non-null parameter values.
@@ -31,7 +32,10 @@ abstract class $HomeDataCopyWith<$Res> {
   factory $HomeDataCopyWith(HomeData value, $Res Function(HomeData) then) =
       _$HomeDataCopyWithImpl<$Res, HomeData>;
   @useResult
-  $Res call({int? totalAnswers, int? totalAnswersUntilThreeDays});
+  $Res call(
+      {int? totalAnswers,
+      int? totalAnswersUntilThreeDays,
+      List<PersonModel>? lastAnswers});
 }
 
 /// @nodoc
@@ -51,6 +55,7 @@ class _$HomeDataCopyWithImpl<$Res, $Val extends HomeData>
   $Res call({
     Object? totalAnswers = freezed,
     Object? totalAnswersUntilThreeDays = freezed,
+    Object? lastAnswers = freezed,
   }) {
     return _then(_value.copyWith(
       totalAnswers: freezed == totalAnswers
@@ -61,6 +66,10 @@ class _$HomeDataCopyWithImpl<$Res, $Val extends HomeData>
           ? _value.totalAnswersUntilThreeDays
           : totalAnswersUntilThreeDays // ignore: cast_nullable_to_non_nullable
               as int?,
+      lastAnswers: freezed == lastAnswers
+          ? _value.lastAnswers
+          : lastAnswers // ignore: cast_nullable_to_non_nullable
+              as List<PersonModel>?,
     ) as $Val);
   }
 }
@@ -73,7 +82,10 @@ abstract class _$$HomeDataImplCopyWith<$Res>
       __$$HomeDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? totalAnswers, int? totalAnswersUntilThreeDays});
+  $Res call(
+      {int? totalAnswers,
+      int? totalAnswersUntilThreeDays,
+      List<PersonModel>? lastAnswers});
 }
 
 /// @nodoc
@@ -91,6 +103,7 @@ class __$$HomeDataImplCopyWithImpl<$Res>
   $Res call({
     Object? totalAnswers = freezed,
     Object? totalAnswersUntilThreeDays = freezed,
+    Object? lastAnswers = freezed,
   }) {
     return _then(_$HomeDataImpl(
       totalAnswers: freezed == totalAnswers
@@ -101,6 +114,10 @@ class __$$HomeDataImplCopyWithImpl<$Res>
           ? _value.totalAnswersUntilThreeDays
           : totalAnswersUntilThreeDays // ignore: cast_nullable_to_non_nullable
               as int?,
+      lastAnswers: freezed == lastAnswers
+          ? _value._lastAnswers
+          : lastAnswers // ignore: cast_nullable_to_non_nullable
+              as List<PersonModel>?,
     ));
   }
 }
@@ -108,16 +125,29 @@ class __$$HomeDataImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$HomeDataImpl implements _HomeData {
-  _$HomeDataImpl({this.totalAnswers, this.totalAnswersUntilThreeDays});
+  _$HomeDataImpl(
+      {this.totalAnswers,
+      this.totalAnswersUntilThreeDays,
+      final List<PersonModel>? lastAnswers})
+      : _lastAnswers = lastAnswers;
 
   @override
   final int? totalAnswers;
   @override
   final int? totalAnswersUntilThreeDays;
+  final List<PersonModel>? _lastAnswers;
+  @override
+  List<PersonModel>? get lastAnswers {
+    final value = _lastAnswers;
+    if (value == null) return null;
+    if (_lastAnswers is EqualUnmodifiableListView) return _lastAnswers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'HomeData(totalAnswers: $totalAnswers, totalAnswersUntilThreeDays: $totalAnswersUntilThreeDays)';
+    return 'HomeData(totalAnswers: $totalAnswers, totalAnswersUntilThreeDays: $totalAnswersUntilThreeDays, lastAnswers: $lastAnswers)';
   }
 
   @override
@@ -130,12 +160,17 @@ class _$HomeDataImpl implements _HomeData {
             (identical(other.totalAnswersUntilThreeDays,
                     totalAnswersUntilThreeDays) ||
                 other.totalAnswersUntilThreeDays ==
-                    totalAnswersUntilThreeDays));
+                    totalAnswersUntilThreeDays) &&
+            const DeepCollectionEquality()
+                .equals(other._lastAnswers, _lastAnswers));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, totalAnswers, totalAnswersUntilThreeDays);
+  int get hashCode => Object.hash(
+      runtimeType,
+      totalAnswers,
+      totalAnswersUntilThreeDays,
+      const DeepCollectionEquality().hash(_lastAnswers));
 
   /// Create a copy of HomeData
   /// with the given fields replaced by the non-null parameter values.
@@ -149,12 +184,15 @@ class _$HomeDataImpl implements _HomeData {
 abstract class _HomeData implements HomeData {
   factory _HomeData(
       {final int? totalAnswers,
-      final int? totalAnswersUntilThreeDays}) = _$HomeDataImpl;
+      final int? totalAnswersUntilThreeDays,
+      final List<PersonModel>? lastAnswers}) = _$HomeDataImpl;
 
   @override
   int? get totalAnswers;
   @override
   int? get totalAnswersUntilThreeDays;
+  @override
+  List<PersonModel>? get lastAnswers;
 
   /// Create a copy of HomeData
   /// with the given fields replaced by the non-null parameter values.
