@@ -13,6 +13,7 @@ class SkillsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       child: Container(
@@ -20,14 +21,32 @@ class SkillsCard extends StatelessWidget {
           horizontal: size.width * 0.02,
           vertical: size.height * 0.01,
         ),
-        width: size.width > 800 ? size.width * 0.3 : size.width * 0.25,
+        width: size.width > 800 ? size.width * 0.3 : size.width * 0.2,
         height: size.height * .25,
         child: ListView.builder(
           itemCount: person.skills.length,
           itemBuilder: (context, index) {
             final skill = person.skills[index];
 
-            return Text(skill, style: textTheme.bodyLarge);
+            return SizedBox(
+              width: size.width * 0.03,
+              child: Tooltip(
+                message: skill,
+                textStyle: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSecondaryFixed,
+                ),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryFixed,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  skill,
+                  style: textTheme.bodyLarge,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            );
           },
         ),
       ),

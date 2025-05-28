@@ -103,8 +103,16 @@ class _HomeViewState extends State<HomeView> {
                             } catch (e) {
                               person.photo = null;
                             }
-                            final circle =
-                                'Círculo ${person.circle} ${person.ejcNumber}';
+                            final circle = person.circle.isEmpty
+                                ? size.width < 600
+                                    ? '--'
+                                    : 'Círculo não informado'
+                                : size.width < 600
+                                    ? '${person.circle}'
+                                        ' ${person.ejcNumber}'
+                                    : 'Círculo ${person.circle}'
+                                        ' ${person.ejcNumber}';
+
                             return InkWell(
                               onTap: () {
                                 showDialog<void>(
@@ -124,37 +132,61 @@ class _HomeViewState extends State<HomeView> {
                                     vertical: size.height * 0.015,
                                   ),
                                   child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      CircleAvatar(
-
-                                      
-                                        child: person.photo != null
-                                            ? ClipOval(
-                                                child: Image.memory(
-                                                  base64Decode(person.photo!),
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                ),
-                                              )
-                                            : const Icon(
-                                                HugeIcons.strokeRoundedUserList,
+                                      Flexible(
+                                        flex: 3,
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              child: person.photo != null
+                                                  ? ClipOval(
+                                                      child: Image.memory(
+                                                        base64Decode(
+                                                          person.photo!,
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        height: double.infinity,
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      HugeIcons
+                                                          .strokeRoundedUserList,
+                                                    ),
+                                            ),
+                                            SizedBox(width: size.width * .02),
+                                            Text(
+                                              person.name,
+                                              style: textTheme.labelLarge,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Flexible(
+                                        flex: size.width < 600 ? 2 : 1,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${person.ejcNumber}º EJC',
+                                              style: textTheme.bodySmall,
+                                            ),
+                                            SizedBox(width: size.width * .01),
+                                            SizedBox(
+                                              width: size.width * .1,
+                                              child: Text(
+                                                circle,
+                                                style: textTheme.bodySmall,
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
                                               ),
-                                      ),
-                                      SizedBox(width: size.width * .02),
-                                      Text(
-                                        person.name,
-                                        style: textTheme.labelLarge,
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '${person.ejcNumber}º EJC',
-                                        style: textTheme.bodySmall,
-                                      ),
-                                      SizedBox(width: size.width * .02),
-                                      Text(
-                                        circle,
-                                        style: textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),

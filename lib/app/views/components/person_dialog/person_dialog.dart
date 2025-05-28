@@ -88,46 +88,51 @@ class _PersonDialogState extends State<PersonDialog> {
                         ),
                 ),
                 SizedBox(width: size.width * 0.05),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        text: 'Data de nascimento: ',
-                        style: textTheme.bodyLarge,
-                        children: [
-                          TextSpan(
-                            text: birthDate,
-                            style: textTheme.titleSmall,
-                          ),
-                        ],
+                SizedBox(
+                  width: size.width * 0.4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          text: 'Data de nascimento: ',
+                          style: textTheme.bodyLarge,
+                          children: [
+                            TextSpan(
+                              text: birthDate,
+                              style: textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Círculo de origem: ',
-                        style: textTheme.bodyLarge,
-                        children: [
-                          TextSpan(
-                            text: widget.person.circle,
-                            style: textTheme.titleSmall,
-                          ),
-                        ],
+                      RichText(
+                        text: TextSpan(
+                          text: 'Círculo de origem: ',
+                          style: textTheme.bodyLarge,
+                          children: [
+                            TextSpan(
+                              text: widget.person.circle.isEmpty
+                                  ? '--'
+                                  : widget.person.circle,
+                              style: textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Fez o: ',
-                        style: textTheme.bodyLarge,
-                        children: [
-                          TextSpan(
-                            text: ejcDo,
-                            style: textTheme.titleSmall,
-                          ),
-                        ],
+                      RichText(
+                        text: TextSpan(
+                          text: 'Fez o: ',
+                          style: textTheme.bodyLarge,
+                          children: [
+                            TextSpan(
+                              text: ejcDo,
+                              style: textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -141,18 +146,14 @@ class _PersonDialogState extends State<PersonDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Encontros que serviu:',
                       style: textTheme.titleLarge,
                     ),
-                    Visibility(
-                      visible: widget.person.teams != null ||
-                          widget.person.teams!.isNotEmpty,
-                      replacement: const Text('Não serviuu em nenhum encontro'),
-                      child: WasWorkedCard(person: widget.person),
-                    ),
+                    WasWorkedCard(person: widget.person),
                   ],
                 ),
                 Column(
