@@ -1,6 +1,5 @@
 import 'package:ejc_frontend_dashboard/app/data/repositories/repositories.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
-
 import 'package:provider/provider.dart';
 
 class Providers {
@@ -10,19 +9,19 @@ class Providers {
         Provider<AuthRepository>(
           create: (_) => RemoteAuthRepository(),
         ),
-        Provider(
+        Provider<AuthViewmodelBloc>(
           create: (context) => AuthViewmodelBloc(context.read()),
         ),
         Provider<HomeRepository>(
           create: (context) => RemoteHomeRepository(),
         ),
-        Provider(
+        Provider<HomeViewmodelBloc>(
           create: (context) => HomeViewmodelBloc(context.read()),
         ),
         Provider<PeopleRepository>(
           create: (context) => RemotePeopleRepository(),
         ),
-        Provider(
+        Provider<PeopleViewmodelBloc>(
           create: (context) => PeopleViewmodelBloc(context.read()),
         ),
       ],

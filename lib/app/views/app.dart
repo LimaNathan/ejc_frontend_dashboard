@@ -14,6 +14,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: providersSource.providers,
       child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: routes,

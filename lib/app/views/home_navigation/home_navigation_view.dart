@@ -1,8 +1,13 @@
+import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
 import 'package:ejc_frontend_dashboard/app/views/home/home_view.dart';
 import 'package:ejc_frontend_dashboard/app/views/people/people_list_view.dart';
 import 'package:ejc_frontend_dashboard/app/views/teams/team_list_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeNavigationView extends StatefulWidget {
   const HomeNavigationView({super.key});
@@ -15,6 +20,7 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
   late PageController pageController;
   bool isNavigationExpanded = false;
   int selectedIndexPage = 0;
+
   final pages = [
     const HomeView(),
     const PeopleListView(),
@@ -32,92 +38,150 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        leading: Padding(
-          padding: EdgeInsets.all(size.height * 0.01),
-          child: Image.asset(
-            'assets/logo_ejc.png',
+    final user = Supabase.instance.client.auth.currentUser;
+    final textTheme = Theme.of(context).textTheme;
+    return BlocProvider(
+      create: (context) => context.read<AuthViewmodelBloc>(),
+      child: BlocListener<AuthViewmodelBloc, AuthViewmodelState>(
+        listener: (context, state) {
+          if (state is AuthUnlogged) {
+            context.pushReplacementNamed(ConstantRoutes.initialRoute);
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            forceMaterialTransparency: true,
+            centerTitle: true,
+            title: SizedBox(
+              width: size.width * .4,
+              child: TextField(
+                onChanged: (value) {},
+                decoration: InputDecoration(
+                  hintText: 'Pesquisar pessoa...',
+                  maintainHintHeight: false,
+                  icon: const Icon(HugeIcons.strokeRoundedUserSearch01),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Row(
+                children: [
+                  const CircleAvatar(
+                    child: Icon(HugeIcons.strokeRoundedUser),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    user?.email ?? '--',
+                    style: textTheme.bodySmall,
+                  ),
+                  const SizedBox(width: 10),
+                  PopupMenuButton(
+                    onSelected: (value) {
+                      if (value == 'logout') {
+                        Supabase.instance.client.auth.signOut();
+                      }
+                    },
+                    icon: const Icon(HugeIcons.strokeRoundedMenuTwoLine),
+                    itemBuilder: (context) {
+                      return [
+                        const PopupMenuItem(
+                          value: 'logout',
+                          child: Text('Sair'),
+                        ),
+                      ];
+                    },
+                  ),
+                ],
+              ),
+            ],
+            leading: Padding(
+              padding: EdgeInsets.all(size.height * 0.01),
+              child: Image.asset(
+                'assets/logo_ejc.png',
+              ),
+            ),
+            backgroundColor: Colors.transparent,
           ),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
-      body: Row(
-        children: [
-          NavigationRail(
-            indicatorColor: colorScheme.primary,
-            selectedIndex: selectedIndexPage,
-            useIndicator: true,
-            extended: isNavigationExpanded,
-            onDestinationSelected: (index) {
-              selectedIndexPage = index;
+          body: Row(
+            children: [
+              NavigationRail(
+                indicatorColor: colorScheme.primary,
+                selectedIndex: selectedIndexPage,
+                useIndicator: true,
+                extended: isNavigationExpanded,
+                onDestinationSelected: (index) {
+                  selectedIndexPage = index;
 
-              pageController.animateToPage(
-                index,
-                curve: Curves.easeIn,
-                duration: const Duration(milliseconds: 300),
-              );
-              setState(() {});
-            },
-            leading: IconButton(
-              onPressed: () => setState(
-                () => isNavigationExpanded = !isNavigationExpanded,
-              ),
-              icon: HugeIcon(
-                icon: isNavigationExpanded
-                    ? HugeIcons.strokeRoundedMenuCollapse
-                    : HugeIcons.strokeRoundedMenu01,
-                color: colorScheme.scrim,
-              ),
-            ),
-            unselectedIconTheme: IconThemeData(
-              color: colorScheme.scrim,
-            ),
-            selectedIconTheme: IconThemeData(
-              color: colorScheme.onPrimary,
-            ),
-            indicatorShape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(8),
-              ),
-            ),
-            destinations: const [
-              NavigationRailDestination(
-                padding: EdgeInsets.all(8),
-                icon: Icon(
-                  HugeIcons.strokeRoundedHome01,
-                  size: 16,
+                  pageController.animateToPage(
+                    index,
+                    curve: Curves.easeIn,
+                    duration: const Duration(milliseconds: 300),
+                  );
+                  setState(() {});
+                },
+                leading: IconButton(
+                  onPressed: () => setState(
+                    () => isNavigationExpanded = !isNavigationExpanded,
+                  ),
+                  icon: HugeIcon(
+                    icon: isNavigationExpanded
+                        ? HugeIcons.strokeRoundedMenuCollapse
+                        : HugeIcons.strokeRoundedMenu01,
+                    color: colorScheme.scrim,
+                  ),
                 ),
-                label: Text('Página inicial'),
-              ),
-              NavigationRailDestination(
-                padding: EdgeInsets.all(8),
-                icon: Icon(
-                  HugeIcons.strokeRoundedUserGroup,
-                  size: 16,
+                unselectedIconTheme: IconThemeData(
+                  color: colorScheme.scrim,
                 ),
-                label: Text('Lista de pessoas'),
-              ),
-              NavigationRailDestination(
-                padding: EdgeInsets.all(8),
-                icon: Icon(
-                  HugeIcons.strokeRoundedGroup01,
-                  size: 16,
+                selectedIconTheme: IconThemeData(
+                  color: colorScheme.onPrimary,
                 ),
-                label: Text('Lista de equipes'),
+                indicatorShape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(8),
+                  ),
+                ),
+                destinations: const [
+                  NavigationRailDestination(
+                    padding: EdgeInsets.all(8),
+                    icon: Icon(
+                      HugeIcons.strokeRoundedHome01,
+                      size: 16,
+                    ),
+                    label: Text('Página inicial'),
+                  ),
+                  NavigationRailDestination(
+                    padding: EdgeInsets.all(8),
+                    icon: Icon(
+                      HugeIcons.strokeRoundedUserGroup,
+                      size: 16,
+                    ),
+                    label: Text('Lista de pessoas'),
+                  ),
+                  NavigationRailDestination(
+                    padding: EdgeInsets.all(8),
+                    icon: Icon(
+                      HugeIcons.strokeRoundedGroup01,
+                      size: 16,
+                    ),
+                    label: Text('Lista de equipes'),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  scrollDirection: Axis.vertical,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: pages,
+                ),
               ),
             ],
           ),
-          Expanded(
-            child: PageView(
-              controller: pageController,
-              scrollDirection: Axis.vertical,
-              physics: const NeverScrollableScrollPhysics(),
-              children: pages,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

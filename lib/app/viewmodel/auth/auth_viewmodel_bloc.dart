@@ -11,6 +11,15 @@ class AuthViewmodelBloc extends Bloc<AuthViewmodelEvent, AuthViewmodelState> {
     this._authRepository,
   ) : super(AuthInitial()) {
     on<LoginEvent>(_onLogin);
+    on<LogoutEvent>(
+      (event, emit) async {
+        emit(AuthLoading());
+
+        await _authRepository.logout();
+
+        emit(AuthUnlogged());
+      },
+    );
   }
   final AuthRepository _authRepository;
 

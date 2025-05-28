@@ -2,6 +2,7 @@ analyzer:
   errors:
     strict_raw_type: ignore
     depend_on_referenced_packages: ignore
+    one_member_abstracts: ignore
 include: package:very_good_analysis/analysis_options.6.0.0.yaml
 linter:
   rules:

@@ -20,13 +20,14 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthViewmodelBloc(context.read()),
+      create: (context) => context.read<AuthViewmodelBloc>(),
       child: BlocBuilder<AuthViewmodelBloc, AuthViewmodelState>(
         builder: (context, state) {
           if (state is! AuthLoading) {
             LoadingOverlay.hide();
           }
 
+      
           if (state is AuthError) {
             LoadingOverlay.hide();
             WidgetsBinding //

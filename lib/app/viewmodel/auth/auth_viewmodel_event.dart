@@ -7,3 +7,5 @@ class LoginEvent extends AuthViewmodelEvent {
   LoginEvent(this.credentials);
   final Credentials credentials;
 }
+
+class LogoutEvent extends AuthViewmodelEvent {}
