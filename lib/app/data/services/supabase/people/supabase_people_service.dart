@@ -14,7 +14,7 @@ class SupabasePeopleService {
     final from = page * pageSize;
     final to = from + pageSize - 1;
 
-    final response = await _supabase.client //
+    final response = await _supabase.client
         .from('users')
         .select('*, user_teams(*, teams(*))')
         .order('created_at', ascending: false)
@@ -25,15 +25,12 @@ class SupabasePeopleService {
           ),
         );
 
-    final countResponse = await _supabase.client //
-        .from('users')
-        .select('id')
-        .count()
-        .onError(
-          (handleError, stackTrace) => throw AppSupabaseFetchException(
-            handleError.toString(),
-          ),
-        );
+    final countResponse =
+        await _supabase.client.from('users').select('id').count().onError(
+              (handleError, stackTrace) => throw AppSupabaseFetchException(
+                handleError.toString(),
+              ),
+            );
 
     final totalItems = countResponse.count;
     final totalPages = (totalItems / pageSize).ceil();
@@ -49,5 +46,20 @@ class SupabasePeopleService {
         pageSize: pageSize,
       ),
     );
+  }
+
+  AsyncResult<List<PersonModel>> lastFiveAwnsersByName(String name) async {
+    try {
+      final response = await _supabase.client
+          .from('users')
+          .select('*, user_teams(*, teams(*))')
+          .ilike('nome', '%$name%')
+          .order('created_at', ascending: false)
+          .limit(5);
+
+      return Success(response.map(PersonModel.fromJson).toList());
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
   }
 }

@@ -19,56 +19,52 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => context.read<AuthViewmodelBloc>(),
-      child: BlocBuilder<AuthViewmodelBloc, AuthViewmodelState>(
-        builder: (context, state) {
-          if (state is! AuthLoading) {
-            LoadingOverlay.hide();
-          }
+    return BlocBuilder<AuthViewmodelBloc, AuthViewmodelState>(
+      builder: (context, state) {
+        if (state is! AuthLoading) {
+          LoadingOverlay.hide();
+        }
 
-      
-          if (state is AuthError) {
-            LoadingOverlay.hide();
-            WidgetsBinding //
-                .instance
-                .addPostFrameCallback(
-              (_) => showCustomSnackbar(
-                context,
-                message: state.message,
-                type: SnackbarType.error,
-              ),
-            );
-          }
-
-          if (state is AuthLoading) {
-            WidgetsBinding //
-                .instance
-                .addPostFrameCallback((_) => LoadingOverlay.show(context));
-          }
-
-          if (state is AuthSuccess) {
-            WidgetsBinding //
-                .instance
-                .addPostFrameCallback(
-              (_) => context.go(ConstantRoutes.homeView),
-            );
-          }
-          return Scaffold(
-            backgroundColor: Theme.of(context) //
-                .colorScheme
-                .onPrimary,
-            body: const Center(
-              child: Row(
-                children: [
-                  LoginBackground(),
-                  AuthForm(),
-                ],
-              ),
+        if (state is AuthError) {
+          LoadingOverlay.hide();
+          WidgetsBinding //
+              .instance
+              .addPostFrameCallback(
+            (_) => showCustomSnackbar(
+              context,
+              message: state.message,
+              type: SnackbarType.error,
             ),
           );
-        },
-      ),
+        }
+
+        if (state is AuthLoading) {
+          WidgetsBinding //
+              .instance
+              .addPostFrameCallback((_) => LoadingOverlay.show(context));
+        }
+
+        if (state is AuthSuccess) {
+          WidgetsBinding //
+              .instance
+              .addPostFrameCallback(
+            (_) => context.go(ConstantRoutes.homeView),
+          );
+        }
+        return Scaffold(
+          backgroundColor: Theme.of(context) //
+              .colorScheme
+              .onPrimary,
+          body: const Center(
+            child: Row(
+              children: [
+                LoginBackground(),
+                AuthForm(),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

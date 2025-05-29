@@ -7,4 +7,6 @@ abstract interface class PeopleRepository {
     required int page,
     required int pageSize,
   });
+
+  AsyncResult<List<PersonModel>> searchPeople(String name);
 }

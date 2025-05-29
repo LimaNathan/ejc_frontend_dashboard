@@ -3,8 +3,8 @@ part of 'people_viewmodel_bloc.dart';
 @immutable
 sealed class PeopleViewmodelEvent {}
 
-class FetchPaginatedPeople extends PeopleViewmodelEvent {
-  FetchPaginatedPeople({
+class FetchPaginatedPeopleEvent extends PeopleViewmodelEvent {
+  FetchPaginatedPeopleEvent({
     required this.page,
     required this.pageSize,
   });

@@ -5,17 +5,25 @@ import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/person
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-class ListTilePersonCard extends StatelessWidget {
+class ListTilePersonCard extends StatefulWidget {
   const ListTilePersonCard({
     required this.person,
-    required this.circle,
+    this.circle = '--',
+    this.resumed = false,
+    this.onPressed,
     super.key,
   });
 
   final PersonModel person;
-
+  final bool resumed;
   final String circle;
+  final void Function()? onPressed;
 
+  @override
+  State<ListTilePersonCard> createState() => _ListTilePersonCardState();
+}
+
+class _ListTilePersonCardState extends State<ListTilePersonCard> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -23,10 +31,12 @@ class ListTilePersonCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () {
+        if (widget.onPressed != null) widget.onPressed!.call();
+
         showDialog<void>(
           context: context,
           builder: (context) => PersonDialog(
-            person: person,
+            person: widget.person,
           ),
         );
       },
@@ -56,11 +66,11 @@ class ListTilePersonCard extends StatelessWidget {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      child: person.photo != null
+                      child: widget.person.photo != null
                           ? ClipOval(
                               child: Image.memory(
                                 base64Decode(
-                                  person.photo!,
+                                  widget.person.photo!,
                                 ),
                                 fit: BoxFit.cover,
                                 width: double.infinity,
@@ -73,7 +83,7 @@ class ListTilePersonCard extends StatelessWidget {
                     ),
                     SizedBox(width: size.width * .02),
                     Text(
-                      person.name,
+                      widget.person.name,
                       style: textTheme.labelLarge,
                     ),
                   ],
@@ -82,23 +92,26 @@ class ListTilePersonCard extends StatelessWidget {
               Flexible(
                 flex: size.width < 600 ? 2 : 1,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: !widget.resumed
+                      ? MainAxisAlignment.spaceBetween
+                      : MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${person.ejcNumber}º EJC',
+                      '${widget.person.ejcNumber}º EJC',
                       style: textTheme.bodySmall,
                     ),
-                    SizedBox(width: size.width * .01),
-                    SizedBox(
-                      width: size.width * .1,
-                      child: Text(
-                        circle,
-                        style: textTheme.bodySmall,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                    if (!widget.resumed) SizedBox(width: size.width * .01),
+                    if (!widget.resumed)
+                      SizedBox(
+                        width: size.width * .06,
+                        child: Text(
+                          widget.circle,
+                          style: textTheme.bodySmall,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

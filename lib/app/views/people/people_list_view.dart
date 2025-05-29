@@ -28,7 +28,7 @@ class _PeopleListViewState extends State<PeopleListView> {
 
           if (bloc.state is! PeopleViewmodelLoaded) {
             bloc.add(
-              FetchPaginatedPeople(
+              FetchPaginatedPeopleEvent(
                 page: 0,
                 pageSize: 7,
               ),
@@ -57,14 +57,11 @@ class _PeopleListViewState extends State<PeopleListView> {
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        children: [
-                          const TitlePeopleListView(),
-                          ListViewBuilderPersonTile(
-                            persons: state.page.items,
-                          ),
-                        ],
+                      const TitlePeopleListView(),
+                      ListViewBuilderPersonTile(
+                        persons: state.page.items,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,7 +77,7 @@ class _PeopleListViewState extends State<PeopleListView> {
                                 return;
                               } else {
                                 context.read<PeopleViewmodelBloc>().add(
-                                      FetchPaginatedPeople(
+                                      FetchPaginatedPeopleEvent(
                                         page: state.page.currentPage - 1,
                                         pageSize: 7,
                                       ),
@@ -106,7 +103,7 @@ class _PeopleListViewState extends State<PeopleListView> {
                                       return;
                                     } else {
                                       context.read<PeopleViewmodelBloc>().add(
-                                            FetchPaginatedPeople(
+                                            FetchPaginatedPeopleEvent(
                                               page: index,
                                               pageSize: 7,
                                             ),
@@ -161,7 +158,7 @@ class _PeopleListViewState extends State<PeopleListView> {
                                 return;
                               } else {
                                 context.read<PeopleViewmodelBloc>().add(
-                                      FetchPaginatedPeople(
+                                      FetchPaginatedPeopleEvent(
                                         page: state.page.currentPage + 1,
                                         pageSize: 7,
                                       ),

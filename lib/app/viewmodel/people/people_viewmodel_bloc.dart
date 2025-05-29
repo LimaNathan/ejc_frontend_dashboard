@@ -11,23 +11,21 @@ class PeopleViewmodelBloc
     extends Bloc<PeopleViewmodelEvent, PeopleViewmodelState> {
   PeopleViewmodelBloc(this._peopleRepository)
       : super(PeopleViewmodelInitial()) {
-    on<FetchPaginatedPeople>(_onFetchPaginatedPeople);
+    on<FetchPaginatedPeopleEvent>(_onFetchPaginatedPeople);
   }
 
   final PeopleRepository _peopleRepository;
 
-  Future<void> _onFetchPaginatedPeople(
-    FetchPaginatedPeople event,
+  Future _onFetchPaginatedPeople(
+    FetchPaginatedPeopleEvent event,
     Emitter<PeopleViewmodelState> emit,
   ) async {
     emit(PeopleViewmodelLoading());
     final page = event.page;
     final pageSize = event.pageSize;
 
-    final result = await _peopleRepository.fetchPaginatedUsers(
-      page: page,
-      pageSize: pageSize,
-    );
+    final result = await _peopleRepository //
+        .fetchPaginatedUsers(page: page, pageSize: pageSize);
 
     result.fold(
       (page) => emit(PeopleViewmodelLoaded(page: page)),

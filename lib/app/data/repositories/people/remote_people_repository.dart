@@ -15,4 +15,9 @@ class RemotePeopleRepository implements PeopleRepository {
         page: page,
         pageSize: pageSize,
       );
+
+  @override
+  AsyncResult<List<PersonModel>> searchPeople(String name) =>
+      _supabasePeopleService //
+          .lastFiveAwnsersByName(name);
 }
