@@ -13,7 +13,7 @@ class _TeamListViewState extends State<TeamListView> {
   Widget build(BuildContext context) {
     return const BaseViewBackground(
       child: Center(
-        child: Text('Lista de equipes'),
+        child: Text('Em desenvolvimento'),
       ),
     );
   }
