@@ -27,32 +27,40 @@ class PersonModel extends PersonEntity {
         aniversario: entity.aniversario,
       );
 
-  factory PersonModel.fromJson(Map<String, dynamic> json) => PersonModel(
-        name: json['nome'] as String,
-        photo: (json['foto'] as String).split(',').last,
-        circle: json['circulo'] as String,
-        ejcNumber: json['ejc_fez'] as String,
-        aniversario: DateTime.parse(json['aniversario'] as String),
-        skills: List<String>.from(
-          json['aptidoes'] is String
-              ? jsonDecode(json['aptidoes'] as String) as List
-              : json['aptidoes'] as List,
-        ),
-        teams: (json['user_teams'] != null)
-            ? List<TeamParticipationModel>.from(
-                (json['user_teams'] as Iterable).map(
-                  (x) => TeamParticipationModel(
-                    encontro: (x['encontro'] as int).toString(),
-                    team: x['teams'] != null
-                        ? x['teams']['name'] as String
-                        : null,
-                    isCoordinator: x['is_coordinator'] as bool,
-                  ),
+  factory PersonModel.fromJson(Map<String, dynamic> json) {
+    final personModel = PersonModel(
+      name: json['nome'] as String,
+      photo: (json['foto'] as String).split(',').last,
+      circle: json['circulo'] as String,
+      ejcNumber: json['ejc_fez'] as String,
+      aniversario: DateTime.parse(json['aniversario'] as String),
+      skills: List<String>.from(
+        json['aptidoes'] is String
+            ? jsonDecode(json['aptidoes'] as String) as List
+            : json['aptidoes'] as List,
+      ),
+      teams: (json['user_teams'] == null)
+          ? null
+          : List<TeamParticipationModel>.from(
+              (json['user_teams'] as Iterable).map(
+                (x) => TeamParticipationModel(
+                  encontro: (x['encontro'] as int).toString(),
+                  team:
+                      x['teams'] != null ? x['teams']['name'] as String : null,
+                  isCoordinator: x['is_coordinator'] as bool,
                 ),
-              )
-            : null,
-        phones: List<String>.from(json['telefones'] as Iterable<dynamic>),
+              ),
+            ),
+      phones: List<String>.from(json['telefones'] as Iterable<dynamic>),
+    );
+
+    return personModel //
+      ..teams //
+          ?.sort(
+        (a, b) => a.encontro //
+            .compareTo(b.encontro),
       );
+  }
 
   Map<String, dynamic> toJson() => {
         'nome': name,

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppBlocObserver extends BlocObserver {
@@ -37,6 +38,7 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
       authFlowType: AuthFlowType.implicit,
     ),
   );
+  usePathUrlStrategy();
 
   runApp(await builder());
 }
