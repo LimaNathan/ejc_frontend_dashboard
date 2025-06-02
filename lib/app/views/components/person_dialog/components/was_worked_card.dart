@@ -30,7 +30,9 @@ class WasWorkedCard extends StatelessWidget {
               child: ListView.builder(
                 itemCount: person.teams!.length,
                 itemBuilder: (context, index) {
-                  final teams = person.teams![index];
+                  final teams = person
+                      .teams![ index];
+
                   final teamEJC = size.width < 500
                       ? '${teams.encontro}º EJC:'
                           ' ${teams.team ?? 'Não serviu'}'

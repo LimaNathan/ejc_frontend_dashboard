@@ -23,6 +23,18 @@ class _AuthFormState extends State<AuthForm> {
   Widget build(BuildContext context) {
     void changeObscureText() => setState(() => obscureText = !obscureText);
     final size = MediaQuery.sizeOf(context);
+
+    void onPressed() {
+      context.read<AuthViewmodelBloc>().add(
+            LoginEvent(
+              Credentials(
+                email: emailEC.text,
+                password: passwordEC.text,
+              ),
+            ),
+          );
+    }
+
     return Container(
       padding: EdgeInsets.all(size.width * 0.025),
       width: size.width * 0.5,
@@ -58,6 +70,7 @@ class _AuthFormState extends State<AuthForm> {
             key: const ValueKey('password'),
             obscureText: obscureText,
             controller: passwordEC,
+            onEditingComplete: onPressed,
             decoration: InputDecoration(
               label: const Text('Senha'),
               suffixIcon: IconButton(
@@ -74,16 +87,7 @@ class _AuthFormState extends State<AuthForm> {
             ),
           ),
           FilledButton(
-            onPressed: () {
-              context.read<AuthViewmodelBloc>().add(
-                    LoginEvent(
-                      Credentials(
-                        email: emailEC.text,
-                        password: passwordEC.text,
-                      ),
-                    ),
-                  );
-            },
+            onPressed: onPressed,
             child: const Text('Entrar'),
           ),
         ],
