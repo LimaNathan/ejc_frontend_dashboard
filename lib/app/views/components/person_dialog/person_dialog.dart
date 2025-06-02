@@ -40,6 +40,7 @@ class _PersonDialogState extends State<PersonDialog> {
     final birthDate =
         DateFormat('dd/MM/yyyy').format(widget.person.aniversario);
     final ejcDo = '${widget.person.ejcNumber}º Encontro de Jovens com Cristo';
+    final numbers = widget.person.phones.map((e) => e).join(', ');
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -126,6 +127,18 @@ class _PersonDialogState extends State<PersonDialog> {
                           children: [
                             TextSpan(
                               text: ejcDo,
+                              style: textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: 'Contatos: ',
+                          style: textTheme.bodyLarge,
+                          children: [
+                            TextSpan(
+                              text: numbers,
                               style: textTheme.titleSmall,
                             ),
                           ],

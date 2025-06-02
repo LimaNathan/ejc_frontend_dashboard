@@ -50,7 +50,13 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
       },
       child: Scaffold(
         appBar: AppBar(
+          toolbarHeight: size.height * 0.09,
           forceMaterialTransparency: true,
+          backgroundColor: Colors.transparent,
+          leading: Container(
+            margin: EdgeInsets.all(size.height * 0.01),
+            child: Image.asset('assets/logo_ejc.png'),
+          ),
           centerTitle: true,
           title: const TextFieldSearchPeople(),
           actions: [
@@ -84,13 +90,6 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
               ],
             ),
           ],
-          leading: Padding(
-            padding: EdgeInsets.all(size.height * 0.01),
-            child: Image.asset(
-              'assets/logo_ejc.png',
-            ),
-          ),
-          backgroundColor: Colors.transparent,
         ),
         body: Row(
           children: [

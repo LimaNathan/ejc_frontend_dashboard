@@ -2,6 +2,7 @@ import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/sho
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/base/base_view_background.dart';
+import 'package:ejc_frontend_dashboard/app/views/components/no_data/no_data_component.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_tile/list_view_builder_person_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,119 +61,126 @@ class _PeopleListViewState extends State<PeopleListView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const TitlePeopleListView(),
-                      ListViewBuilderPersonTile(
-                        persons: state.page.items,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () {
-                              if (state.page.currentPage == 0) {
-                                showCustomSnackbar(
-                                  context,
-                                  message: 'Você já está na primeira página',
-                                  type: SnackbarType.error,
-                                );
-                                return;
-                              } else {
-                                context.read<PeopleViewmodelBloc>().add(
-                                      FetchPaginatedPeopleEvent(
-                                        page: state.page.currentPage - 1,
-                                        pageSize: 7,
-                                      ),
-                                    );
-                              }
-                            },
-                            label: const Text('Anterior'),
-                            icon: const Icon(
-                              HugeIcons.strokeRoundedArrowLeft01,
+                      if (state.page.items.isEmpty)
+                        const Center(child: NoDataComponent()),
+                      if (state.page.items.isNotEmpty)
+                        ListViewBuilderPersonTile(
+                          persons: state.page.items,
+                        ),
+                      if (state.page.items.isNotEmpty)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton.icon(
+                              onPressed: () {
+                                if (state.page.currentPage == 0) {
+                                  showCustomSnackbar(
+                                    context,
+                                    message: 'Você já está na primeira página',
+                                    type: SnackbarType.error,
+                                  );
+                                  return;
+                                } else {
+                                  context.read<PeopleViewmodelBloc>().add(
+                                        FetchPaginatedPeopleEvent(
+                                          page: state.page.currentPage - 1,
+                                          pageSize: 7,
+                                        ),
+                                      );
+                                }
+                              },
+                              label: const Text('Anterior'),
+                              icon: const Icon(
+                                HugeIcons.strokeRoundedArrowLeft01,
+                              ),
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(
-                              state.page.totalPages >= 7
-                                  ? 7
-                                  : state.page.totalPages,
-                              (index) {
-                                return InkWell(
-                                  customBorder: const CircleBorder(),
-                                  onTap: () {
-                                    if (index == state.page.currentPage) {
-                                      return;
-                                    } else {
-                                      context.read<PeopleViewmodelBloc>().add(
-                                            FetchPaginatedPeopleEvent(
-                                              page: index,
-                                              pageSize: 7,
-                                            ),
-                                          );
-                                    }
-                                  },
-                                  child: Center(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      height: 36,
-                                      width: 36,
-                                      margin: const EdgeInsets //
-                                          .symmetric(horizontal: 4),
-                                      decoration: BoxDecoration(
-                                        border: state.page.currentPage != index
-                                            ? null
-                                            : Border.all(
-                                                color: colorScheme //
-                                                    .surface
-                                                    .withAlpha(100),
-                                                width: 3,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List.generate(
+                                state.page.totalPages >= 7
+                                    ? 7
+                                    : state.page.totalPages,
+                                (index) {
+                                  return InkWell(
+                                    customBorder: const CircleBorder(),
+                                    onTap: () {
+                                      if (index == state.page.currentPage) {
+                                        return;
+                                      } else {
+                                        context.read<PeopleViewmodelBloc>().add(
+                                              FetchPaginatedPeopleEvent(
+                                                page: index,
+                                                pageSize: 7,
                                               ),
-                                        borderRadius: BorderRadius.circular(28),
-                                        color: state.page.currentPage != index
-                                            ? null
-                                            : colorScheme.primary,
-                                      ),
-                                      child: Text(
-                                        '${index + 1}',
-                                        textAlign: TextAlign.justify,
-                                        style: textTheme.bodyLarge?.copyWith(
+                                            );
+                                      }
+                                    },
+                                    child: Center(
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        height: 36,
+                                        width: 36,
+                                        margin: const EdgeInsets //
+                                            .symmetric(horizontal: 4),
+                                        decoration: BoxDecoration(
+                                          border:
+                                              state.page.currentPage != index
+                                                  ? null
+                                                  : Border.all(
+                                                      color: colorScheme //
+                                                          .surface
+                                                          .withAlpha(100),
+                                                      width: 3,
+                                                    ),
+                                          borderRadius:
+                                              BorderRadius.circular(28),
                                           color: state.page.currentPage != index
-                                              ? colorScheme.onPrimaryContainer
-                                              : colorScheme.onPrimary,
+                                              ? null
+                                              : colorScheme.primary,
+                                        ),
+                                        child: Text(
+                                          '${index + 1}',
+                                          textAlign: TextAlign.justify,
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            color: state.page.currentPage !=
+                                                    index
+                                                ? colorScheme.onPrimaryContainer
+                                                : colorScheme.onPrimary,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                },
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () {
+                                if (state.page.currentPage + 1 ==
+                                    state.page.totalPages) {
+                                  showCustomSnackbar(
+                                    context,
+                                    message: 'Você está na última página',
+                                    type: SnackbarType.error,
+                                  );
+                                  return;
+                                } else {
+                                  context.read<PeopleViewmodelBloc>().add(
+                                        FetchPaginatedPeopleEvent(
+                                          page: state.page.currentPage + 1,
+                                          pageSize: 7,
+                                        ),
+                                      );
+                                }
                               },
+                              label: const Text('Próximo'),
+                              iconAlignment: IconAlignment.end,
+                              icon: const Icon(
+                                HugeIcons.strokeRoundedArrowRight01,
+                              ),
                             ),
-                          ),
-                          TextButton.icon(
-                            onPressed: () {
-                              if (state.page.currentPage + 1 ==
-                                  state.page.totalPages) {
-                                showCustomSnackbar(
-                                  context,
-                                  message: 'Você está na última página',
-                                  type: SnackbarType.error,
-                                );
-                                return;
-                              } else {
-                                context.read<PeopleViewmodelBloc>().add(
-                                      FetchPaginatedPeopleEvent(
-                                        page: state.page.currentPage + 1,
-                                        pageSize: 7,
-                                      ),
-                                    );
-                              }
-                            },
-                            label: const Text('Próximo'),
-                            iconAlignment: IconAlignment.end,
-                            icon: const Icon(
-                              HugeIcons.strokeRoundedArrowRight01,
-                            ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
