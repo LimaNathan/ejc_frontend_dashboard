@@ -41,6 +41,20 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
     final colorScheme = Theme.of(context).colorScheme;
     final user = Supabase.instance.client.auth.currentUser;
     final textTheme = Theme.of(context).textTheme;
+    void onDestinationSelected(int index) {
+      selectedIndexPage = index;
+
+      pageController.animateToPage(
+        index,
+        curve: Curves.easeIn,
+        duration: const Duration(milliseconds: 300),
+      );
+      setState(() {});
+    }
+
+    void onPressedIcon() => setState(
+          () => isNavigationExpanded = !isNavigationExpanded,
+        );
 
     return BlocListener<AuthViewmodelBloc, AuthViewmodelState>(
       listener: (context, state) {
@@ -94,24 +108,12 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
         body: Row(
           children: [
             NavigationRail(
-              indicatorColor: colorScheme.primary,
               selectedIndex: selectedIndexPage,
               useIndicator: true,
               extended: isNavigationExpanded,
-              onDestinationSelected: (index) {
-                selectedIndexPage = index;
-
-                pageController.animateToPage(
-                  index,
-                  curve: Curves.easeIn,
-                  duration: const Duration(milliseconds: 300),
-                );
-                setState(() {});
-              },
+              onDestinationSelected: onDestinationSelected,
               leading: IconButton(
-                onPressed: () => setState(
-                  () => isNavigationExpanded = !isNavigationExpanded,
-                ),
+                onPressed: onPressedIcon,
                 icon: HugeIcon(
                   icon: isNavigationExpanded
                       ? HugeIcons.strokeRoundedMenuCollapse
@@ -119,20 +121,8 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
                   color: colorScheme.scrim,
                 ),
               ),
-              unselectedIconTheme: IconThemeData(
-                color: colorScheme.scrim,
-              ),
-              selectedIconTheme: IconThemeData(
-                color: colorScheme.onPrimary,
-              ),
-              indicatorShape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(8),
-                ),
-              ),
               destinations: const [
                 NavigationRailDestination(
-                  padding: EdgeInsets.all(8),
                   icon: Icon(
                     HugeIcons.strokeRoundedHome01,
                     size: 16,
@@ -140,7 +130,6 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
                   label: Text('Página inicial'),
                 ),
                 NavigationRailDestination(
-                  padding: EdgeInsets.all(8),
                   icon: Icon(
                     HugeIcons.strokeRoundedUserGroup,
                     size: 16,
@@ -148,7 +137,6 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
                   label: Text('Lista de pessoas'),
                 ),
                 NavigationRailDestination(
-                  padding: EdgeInsets.all(8),
                   icon: Icon(
                     HugeIcons.strokeRoundedGroup01,
                     size: 16,

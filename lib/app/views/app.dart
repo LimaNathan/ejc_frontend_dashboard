@@ -22,7 +22,7 @@ class App extends StatelessWidget {
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: routes,
           theme: ThemeData(
-            colorSchemeSeed: const Color.fromARGB(255, 241, 87, 64),
+            colorSchemeSeed: const Color.fromARGB(255, 44, 27, 14),
             useMaterial3: true,
             textTheme: const TextTheme(
               headlineLarge: TextStyle(

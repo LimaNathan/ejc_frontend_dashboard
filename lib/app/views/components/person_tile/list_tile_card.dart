@@ -44,9 +44,9 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
         semanticContainer: false,
         shadowColor: colorScheme.outline.withValues(alpha: 200),
         elevation: 1,
-        color: colorScheme.surfaceContainerLowest.withValues(
-          alpha: 50,
-        ),
+        color: colorScheme //
+            .surfaceContainerLowest
+            .withValues(alpha: 80),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
