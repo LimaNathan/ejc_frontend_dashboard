@@ -63,4 +63,5 @@ class SupabasePeopleService {
       return Failure(AppSupabaseFetchException(e.toString()));
     }
   }
+
 }

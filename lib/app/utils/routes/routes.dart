@@ -4,6 +4,7 @@ import 'package:ejc_frontend_dashboard/app/data/services/supabase/auth/supabase_
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
 import 'package:ejc_frontend_dashboard/app/views/auth/login_view.dart';
 import 'package:ejc_frontend_dashboard/app/views/home_navigation/home_navigation_view.dart';
+import 'package:ejc_frontend_dashboard/app/views/team_composition/team_composition_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -20,6 +21,13 @@ final routes = GoRouter(
       redirect: _authRedirect,
       builder: (context, state) {
         return const HomeNavigationView();
+      },
+    ),
+    GoRoute(
+      path: ConstantRoutes.teamCompositionView,
+      redirect: _authRedirect,
+      builder: (context, state) {
+        return const TeamCompositionView();
       },
     ),
   ],

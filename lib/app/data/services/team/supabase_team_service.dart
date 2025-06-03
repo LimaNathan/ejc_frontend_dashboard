@@ -1,0 +1,67 @@
+import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
+import 'package:result_dart/result_dart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class SupabaseTeamService {
+  final _supabase = Supabase.instance;
+
+  AsyncResult<List<TeamModel>> getTeams() async {
+    try {
+      return Success(
+        await _supabase //
+            .client
+            .from('teams')
+            .select()
+            .withConverter(
+              (teams) => teams //
+                  .map(TeamModel.fromJson)
+                  .toList(),
+            ),
+      );
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
+
+  AsyncResult<Unit> insertTeamCompositions(
+    List<TeamComposition> members,
+  ) async {
+    try {
+      await _supabase //
+          .client
+          .from('team_composition')
+          .insert(members.map((e) => e.toJson()).toList());
+
+      return const Success(unit);
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
+
+  AsyncResult<List<DetailedTeamComposition>> getCompositionByTeamId(
+    String teamId,
+  ) async {
+    try {
+      final response = await _supabase.client
+          .from('team_composition')
+          .select(
+            'team_id, user_id, role, users(nome, foto, telefones)',
+          )
+          .eq(
+            'team_id',
+            teamId,
+          );
+
+      return Success(
+        response //
+            .map(DetailedTeamComposition.fromJson)
+            .toList(),
+      );
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
+}

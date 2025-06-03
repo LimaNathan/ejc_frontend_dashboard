@@ -3,4 +3,5 @@ class ConstantRoutes {
 
   static const String initialRoute = '/';
   static const String homeView = '/home';
+  static const String teamCompositionView = '/team-composition';
 }
