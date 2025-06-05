@@ -10,17 +10,16 @@ class SupabaseTeamService {
 
   AsyncResult<List<TeamModel>> getTeams() async {
     try {
-      return Success(
-        await _supabase //
-            .client
-            .from('teams')
-            .select()
-            .withConverter(
-              (teams) => teams //
-                  .map(TeamModel.fromJson)
-                  .toList(),
-            ),
-      );
+      final response = await _supabase //
+          .client
+          .from('teams')
+          .select()
+          .withConverter(
+            (teams) => teams //
+                .map(TeamModel.fromJson)
+                .toList(),
+          );
+      return Success(response);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
     }
@@ -36,6 +35,23 @@ class SupabaseTeamService {
           .insert(members.map((e) => e.toJson()).toList());
 
       return const Success(unit);
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
+
+  AsyncResult<List<TeamComposition>> getCompositions() async {
+    try {
+      final response = await _supabase //
+          .client
+          .from('team_compositions')
+          .select()
+          .withConverter(
+            (teams) => teams //
+                .map(TeamComposition.fromJson)
+                .toList(),
+          );
+      return Success(response);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
     }

@@ -12,6 +12,9 @@ class Providers {
         Provider<PeopleRepository>(
           create: (context) => RemotePeopleRepository(),
         ),
+        Provider<TeamsRepository>(
+          create: (context) => RemoteTeamsRepository(),
+        ),
       ],
     );
 
