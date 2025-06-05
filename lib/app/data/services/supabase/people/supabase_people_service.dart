@@ -54,7 +54,6 @@ class SupabasePeopleService {
           .from('users')
           .select('*, user_teams(*, teams(*))')
           .ilike('nome', '%$name%')
-          .order('encontro', ascending: true)
           .order('created_at', ascending: false)
           .limit(5);
 
@@ -63,5 +62,4 @@ class SupabasePeopleService {
       return Failure(AppSupabaseFetchException(e.toString()));
     }
   }
-
 }
