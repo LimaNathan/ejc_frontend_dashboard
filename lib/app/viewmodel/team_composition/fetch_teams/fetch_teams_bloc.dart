@@ -9,8 +9,8 @@ part 'fetch_team_state.dart';
 
 class FetchTeamBloc extends Bloc<FetchTeamEvent, FetchTeamState> {
   FetchTeamBloc(this._repository) : super(FetchTeamInitial()) {
-    on<OnFetchAllTeams>((event, emit) {
-      _repository.fetchTeams().fold(
+    on<OnFetchAllTeams>((event, emit) async {
+      await _repository.fetchTeams().fold(
         (onSuccess) {
           emit(FetchTeamSuccess(onSuccess));
         },

@@ -22,20 +22,16 @@ class _TeamListViewState extends State<TeamListView> {
   @override
   void initState() {
     super.initState();
-    blocTeams = FetchTeamBloc(context.read())..add(OnFetchAllTeams());
     blocCompositions = TeamCompositionViewmodelBloc(context.read())
       ..add(OnFetchAllCompositions());
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final colorScheme = Theme.of(context).colorScheme;
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => blocTeams),
-        BlocProvider(create: (context) => blocCompositions),
-      ],
+    // final size = MediaQuery.of(context).size;
+    // final colorScheme = Theme.of(context).colorScheme;
+    return BlocProvider(
+      create: (context) => blocCompositions,
       child: BlocBuilder<TeamCompositionViewmodelBloc,
           TeamCompositionViewmodelState>(
         builder: (context, state) {
@@ -72,7 +68,9 @@ class _TeamListViewState extends State<TeamListView> {
 }
 
 class NoTeamsComponent extends StatelessWidget {
-  const NoTeamsComponent({super.key});
+  const NoTeamsComponent({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,101 +91,156 @@ class NoTeamsComponent extends StatelessWidget {
   }
 }
 
-class AddTeamCard extends StatelessWidget {
-  const AddTeamCard({super.key});
+class AddTeamCard extends StatefulWidget {
+  const AddTeamCard({
+    super.key,
+  });
 
+  @override
+  State<AddTeamCard> createState() => _AddTeamCardState();
+}
+
+class _AddTeamCardState extends State<AddTeamCard> {
+  TeamModel? team;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final blocTeam = context.read<FetchTeamBloc>();
-
-    final teams = blocTeam.state is FetchTeamSuccess
-        ? (blocTeam.state as FetchTeamSuccess).teams
-        : <TeamModel>[];
     return Card(
       child: InkWell(
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         onTap: () {
           showDialog<void>(
             context: context,
-            builder: (context) => Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: size.height * 0.03,
-                  horizontal: size.width * 0.035,
-                ),
-                width: size.width * 0.35,
-                height: size.height * 0.25,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Adicionar nova equipe',
-                          style: textTheme.headlineMedium,
+            builder: (context) => BlocProvider(
+              create: (context) => FetchTeamBloc //
+                  (context.read())
+                ..add(OnFetchAllTeams()),
+              child: BlocBuilder<FetchTeamBloc, FetchTeamState>(
+                builder: (context, state) {
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        IconButton(
-                          onPressed: Navigator.of(context).pop,
-                          icon: HugeIcon(
-                            icon: HugeIcons.strokeRoundedCancel01,
-                            color: colorScheme.error,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: size.height * 0.01,
+                            horizontal: size.width * 0.03,
+                          ),
+                          width: size.width * 0.35,
+                          height: size.height * 0.25,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Adicionar nova equipe',
+                                    style: textTheme.headlineMedium,
+                                  ),
+                                  IconButton(
+                                    onPressed: Navigator.of(context).pop,
+                                    icon: HugeIcon(
+                                      icon: HugeIcons.strokeRoundedCancel01,
+                                      color: colorScheme.error,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: size.height * 0.05),
+                              PopupMenuButton<TeamModel>(
+                                offset: const Offset(0, 40),
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Container(
+                                  width: size.width * 0.25,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surfaceContainerLow,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border:
+                                        Border.all(color: colorScheme.outline),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        team?.name ?? 'Equipes...',
+                                        style: textTheme.bodyMedium,
+                                      ),
+                                      const Spacer(),
+                                      Icon(
+                                        HugeIcons.strokeRoundedArrowDown01,
+                                        size: 20,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                itemBuilder: (context) {
+                                  if (state is FetchTeamSuccess) {
+                                    return state.teams.map((toElement) {
+                                      return PopupMenuItem<TeamModel>(
+                                        value: toElement,
+                                        onTap: () => setState(() {
+                                          team = toElement;
+                                        }),
+                                        child: Text(toElement.name),
+                                      );
+                                    }).toList();
+                                  }
+
+                                  if (state is FetchTeamError) {
+                                    return [
+                                      PopupMenuItem<TeamModel>(
+                                        child: Text(state.error),
+                                      ),
+                                    ];
+                                  }
+
+                                  return [];
+                                },
+                              ),
+                              SizedBox(height: size.height * 0.03),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: size.width * 0.12,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cancelar'),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.12,
+                                    child: FilledButton(
+                                      onPressed: () {},
+                                      child: const Text('Criar equipe'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: size.height * 0.05),
-                    PopupMenuButton<TeamModel>(
-                      offset: const Offset(0, 40),
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Container(
-                        width: size.width * 0.25,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLow,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: colorScheme.outline),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Equipes...',
-                              style: textTheme.bodyMedium,
-                            ),
-                            const Spacer(),
-                            Icon(
-                              HugeIcons.strokeRoundedArrowDown01,
-                              size: 20,
-                              color: Colors.grey[600],
-                            ),
-                          ],
-                        ),
-                      ),
-                      itemBuilder: (context) {
-                        return [
-                          ...teams.map((e) {
-                            return PopupMenuItem<TeamModel>(
-                              value: e,
-                              child: Text(e.name),
-                            );
-                          }),
-                        ];
-                      },
-                    ),
-                  ],
-                ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           );
