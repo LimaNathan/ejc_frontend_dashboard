@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ejc_frontend_dashboard/app/data/services/supabase/auth/supabase_auth_service.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
 import 'package:ejc_frontend_dashboard/app/views/auth/login_view.dart';
 import 'package:ejc_frontend_dashboard/app/views/home_navigation/home_navigation_view.dart';
@@ -25,9 +26,12 @@ final routes = GoRouter(
     ),
     GoRoute(
       path: ConstantRoutes.teamCompositionView,
+      name: ConstantRoutes.teamCompositionView,
       redirect: _authRedirect,
       builder: (context, state) {
-        return const TeamCompositionView();
+        return TeamCompositionView(
+          team: state.extra! as TeamModel,
+        );
       },
     ),
   ],

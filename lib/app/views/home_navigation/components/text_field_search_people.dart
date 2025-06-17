@@ -1,5 +1,10 @@
+// ignore_for_file: prefer_null_aware_method_calls
+
 import 'dart:async';
 
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_tile/list_tile_card.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +12,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TextFieldSearchPeople extends StatefulWidget
     implements PreferredSizeWidget {
-  const TextFieldSearchPeople({super.key});
+   TextFieldSearchPeople({
+    super.key,
+    this.team,
+    this.composition,
+    this.isAddingToTeam,
+  });
+
+  final TeamModel? team;
+  final bool? isAddingToTeam;
+
+   List<DetailedTeamComposition>? composition;
+
 
   @override
   State<TextFieldSearchPeople> createState() => _TextFieldSearchPeopleState();
@@ -100,6 +116,9 @@ class _TextFieldSearchPeopleState extends State<TextFieldSearchPeople> {
                       person: people[index],
                       resumed: true,
                       onPressed: _removeOverlay,
+                      isAddingToTeam: widget.isAddingToTeam,
+                      composition: widget.composition,
+
                     ),
                   );
                 } else if (state is SearchPeopleViewmodelError) {

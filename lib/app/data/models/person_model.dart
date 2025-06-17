@@ -12,6 +12,7 @@ class PersonModel extends PersonEntity {
     required super.skills,
     required super.phones,
     required super.aniversario,
+    required super.uuid,
     super.teams,
     super.photo,
   });
@@ -25,10 +26,12 @@ class PersonModel extends PersonEntity {
         teams: entity.teams,
         phones: entity.phones,
         aniversario: entity.aniversario,
+        uuid: entity.uuid,
       );
 
   factory PersonModel.fromJson(Map<String, dynamic> json) {
     final personModel = PersonModel(
+      uuid: json['id'] as String,
       name: json['nome'] as String,
       photo: (json['foto'] as String).split(',').last,
       circle: json['circulo'] as String,

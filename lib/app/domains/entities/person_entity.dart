@@ -5,7 +5,9 @@ class PersonEntity {
     required this.circle,
     required this.ejcNumber,
     required this.skills,
-    required this.phones, this.teams,
+    required this.phones,
+    required this.uuid,
+    this.teams,
     this.photo,
   });
 
@@ -17,6 +19,7 @@ class PersonEntity {
   List<String> skills;
   List<TeamParticipationEntity>? teams;
   List<String> phones;
+  String uuid;
 }
 
 class TeamParticipationEntity {

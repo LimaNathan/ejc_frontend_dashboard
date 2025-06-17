@@ -1,18 +1,27 @@
 import 'dart:convert';
 
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/enum/team_role.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
+import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/skills_card.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/was_worked_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 
+// ignore: must_be_immutable
 class PersonDialog extends StatefulWidget {
-  const PersonDialog({
+  PersonDialog({
     required this.person,
-    this.isAddingToTeam = false,
+    this.isAddingToTeam,
+    this.team,
+    this.composition,
     super.key,
   });
+  List<DetailedTeamComposition>? composition;
+  final TeamModel? team;
   final PersonModel person;
   final bool? isAddingToTeam;
 
@@ -51,7 +60,7 @@ class _PersonDialogState extends State<PersonDialog> {
           horizontal: size.width * 0.035,
         ),
         width: size.width * 0.75,
-        height: size.height * 0.85,
+        height: size.height * 0.95,
         child: Column(
           children: [
             Row(
@@ -182,9 +191,8 @@ class _PersonDialogState extends State<PersonDialog> {
               ],
             ),
             const Spacer(),
-            Visibility(
-              visible: widget.isAddingToTeam!,
-              child: Row(
+            if (widget.isAddingToTeam ?? false)
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   TextButton(
@@ -194,14 +202,37 @@ class _PersonDialogState extends State<PersonDialog> {
                     child: const Text('Cancelar'),
                   ),
                   FilledButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      final teamComposition =
+                          DetailedTeamComposition.fromPersonAndTeam(
+                        widget.person,
+                        widget.team!,
+                        TeamRole.integrante,
+                      );
+
+                      if (widget.composition != null &&
+                          widget.composition!.contains(teamComposition)) {
+                        showCustomSnackbar(
+                          context,
+                          message: 'Encontrista já está nessa equipe',
+                        );
+                      }
+
+                      if (widget.composition == null) {
+                        widget.composition = [teamComposition];
+                      }
+
+                      if (widget.composition != null &&
+                          !widget.composition!.contains(teamComposition)) {
+                        widget.composition!.add(teamComposition);
+                      }
+                    },
                     child: const Text(
                       'Adicionar na equipe',
                     ),
                   ),
                 ],
               ),
-            ),
           ],
         ),
       ),

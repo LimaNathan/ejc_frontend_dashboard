@@ -72,7 +72,7 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
             child: Image.asset('assets/logo_ejc.png'),
           ),
           centerTitle: true,
-          title: const TextFieldSearchPeople(),
+          title:  TextFieldSearchPeople(),
           actions: [
             Row(
               children: [
