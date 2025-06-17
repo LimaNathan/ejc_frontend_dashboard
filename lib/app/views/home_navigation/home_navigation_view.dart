@@ -25,6 +25,7 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
   final pages = [
     const HomeView(),
     const PeopleListView(),
+    const TeamListView(),
   ];
 
   @override
@@ -71,7 +72,7 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
             child: Image.asset('assets/logo_ejc.png'),
           ),
           centerTitle: true,
-          title:  TextFieldSearchPeople(),
+          title: TextFieldSearchPeople(),
           actions: [
             Row(
               children: [
