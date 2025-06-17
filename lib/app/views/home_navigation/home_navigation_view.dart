@@ -23,7 +23,6 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
   int selectedIndexPage = 0;
 
   final pages = [
-    const TeamListView(),
     const HomeView(),
     const PeopleListView(),
   ];
