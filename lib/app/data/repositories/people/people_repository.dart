@@ -9,4 +9,6 @@ abstract interface class PeopleRepository {
   });
 
   AsyncResult<List<PersonModel>> searchPeople(String name);
+
+  AsyncResult<Unit> deleteOne(String uuid);
 }

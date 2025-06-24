@@ -62,4 +62,19 @@ class SupabasePeopleService {
       return Failure(AppSupabaseFetchException(e.toString()));
     }
   }
+
+  AsyncResult<Unit> deleteOne(String uuid) async {
+    if (uuid.isEmpty) {
+      return Failure(AppSupabaseFetchException('UUID não pode ser vazio.'));
+    }
+
+    try {
+      final response =
+          await _supabase.client.from('user_teams').delete().eq('_id', uuid);
+
+      return const Success(unit);
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
 }

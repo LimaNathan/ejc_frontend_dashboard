@@ -20,4 +20,8 @@ class RemotePeopleRepository implements PeopleRepository {
   AsyncResult<List<PersonModel>> searchPeople(String name) =>
       _supabasePeopleService //
           .lastFiveAwnsersByName(name);
+
+  @override
+  AsyncResult<Unit> deleteOne(String uuid) =>
+      _supabasePeopleService.deleteOne(uuid);
 }

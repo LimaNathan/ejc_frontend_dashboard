@@ -12,3 +12,11 @@ class FetchPaginatedPeopleEvent extends PeopleViewmodelEvent {
   final int page;
   final int pageSize;
 }
+
+class OnDeleteOne extends PeopleViewmodelEvent {
+  OnDeleteOne({
+    required this.uuid,
+  });
+
+  final String uuid;
+}

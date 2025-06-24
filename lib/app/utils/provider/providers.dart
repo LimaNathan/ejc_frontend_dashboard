@@ -1,12 +1,16 @@
 import 'package:ejc_frontend_dashboard/app/data/repositories/repositories.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 class Providers {
   Providers() {
     _providers.addAll(
       [
+        //* Repositories
+
         Provider<AuthRepository>(create: (_) => RemoteAuthRepository()),
         Provider<HomeRepository>(create: (context) => RemoteHomeRepository()),
         Provider<PeopleRepository>(
@@ -14,6 +18,11 @@ class Providers {
         ),
         Provider<TeamsRepository>(
           create: (context) => RemoteTeamsRepository(),
+        ),
+
+        //* View Models
+        ChangeNotifierProvider(
+          create: (context) => AuthViewmodel(context.read()),
         ),
       ],
     );
@@ -38,8 +47,8 @@ class Providers {
 
   final _blocProviders = <BlocProvider>[];
 
-  final _providers = <Provider>[];
+  final _providers = <SingleChildWidget>[];
 
-  List<Provider> get providers => _providers;
+  List<SingleChildWidget> get providers => _providers;
   List<BlocProvider> get blocProviders => _blocProviders;
 }

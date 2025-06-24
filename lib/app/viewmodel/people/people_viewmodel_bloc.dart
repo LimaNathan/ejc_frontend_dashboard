@@ -12,6 +12,7 @@ class PeopleViewmodelBloc
   PeopleViewmodelBloc(this._peopleRepository)
       : super(PeopleViewmodelInitial()) {
     on<FetchPaginatedPeopleEvent>(_onFetchPaginatedPeople);
+    on<OnDeleteOne>(_onDeleteOne);
   }
 
   final PeopleRepository _peopleRepository;
@@ -29,6 +30,18 @@ class PeopleViewmodelBloc
 
     result.fold(
       (page) => emit(PeopleViewmodelLoaded(page: page)),
+      (error) => emit(PeopleViewmodelError(error: error.toString())),
+    );
+  }
+
+  Future _onDeleteOne(
+    OnDeleteOne event,
+    Emitter<PeopleViewmodelState> emit,
+  ) async {
+    final result = await _peopleRepository.deleteOne(event.uuid);
+
+    result.fold(
+      (onSuccess) {},
       (error) => emit(PeopleViewmodelError(error: error.toString())),
     );
   }
