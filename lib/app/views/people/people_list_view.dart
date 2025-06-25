@@ -118,7 +118,7 @@ class _PeopleListViewState extends State<PeopleListView> {
                                         .execute(data.currentPage - 1, 7);
                                   }
                                 },
-                                label: const Text('Anterior'),
+                                label: Text(size.width < 800 ? '' : 'Anterior'),
                                 icon: const Icon(
                                   HugeIcons.strokeRoundedArrowLeft01,
                                 ),
@@ -149,7 +149,9 @@ class _PeopleListViewState extends State<PeopleListView> {
                                         .execute(data.currentPage + 1, 7);
                                   }
                                 },
-                                label: const Text('Próximo'),
+                                label: Text(
+                                  size.width < 800 ? '' : 'Próximo',
+                                ),
                                 iconAlignment: IconAlignment.end,
                                 icon: const Icon(
                                   HugeIcons.strokeRoundedArrowRight01,

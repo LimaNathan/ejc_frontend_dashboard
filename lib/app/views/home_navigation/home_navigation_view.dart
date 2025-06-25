@@ -1,6 +1,5 @@
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel.dart';
-
 import 'package:ejc_frontend_dashboard/app/views/home/home_view.dart';
 import 'package:ejc_frontend_dashboard/app/views/home_navigation/components/text_field_search_people.dart';
 import 'package:ejc_frontend_dashboard/app/views/people/people_list_view.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeNavigationView extends StatefulWidget {
@@ -77,6 +75,26 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
         );
 
     return Scaffold(
+      bottomNavigationBar: size.width < 800
+          ? BottomNavigationBar(
+              currentIndex: selectedIndexPage,
+              onTap: onDestinationSelected,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(HugeIcons.strokeRoundedHome01),
+                  label: 'Página inicial',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(HugeIcons.strokeRoundedUserGroup),
+                  label: 'Lista de pessoas',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(HugeIcons.strokeRoundedGroup01),
+                  label: 'Lista de equipes',
+                ),
+              ],
+            )
+          : null,
       appBar: AppBar(
         toolbarHeight: size.height * 0.09,
         forceMaterialTransparency: true,
@@ -94,10 +112,11 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
                 child: Icon(HugeIcons.strokeRoundedUser),
               ),
               const SizedBox(width: 10),
-              Text(
-                user?.email ?? '--',
-                style: textTheme.bodySmall,
-              ),
+              if (size.width > 800)
+                Text(
+                  user?.email ?? '--',
+                  style: textTheme.bodySmall,
+                ),
               const SizedBox(width: 10),
               PopupMenuButton(
                 onSelected: (value) {
@@ -121,44 +140,45 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
       ),
       body: Row(
         children: [
-          NavigationRail(
-            selectedIndex: selectedIndexPage,
-            useIndicator: true,
-            extended: isNavigationExpanded,
-            onDestinationSelected: onDestinationSelected,
-            leading: IconButton(
-              onPressed: onPressedIcon,
-              icon: HugeIcon(
-                icon: isNavigationExpanded
-                    ? HugeIcons.strokeRoundedMenuCollapse
-                    : HugeIcons.strokeRoundedMenu01,
-                color: colorScheme.scrim,
+          if (size.width > 800)
+            NavigationRail(
+              selectedIndex: selectedIndexPage,
+              useIndicator: true,
+              extended: isNavigationExpanded,
+              onDestinationSelected: onDestinationSelected,
+              leading: IconButton(
+                onPressed: onPressedIcon,
+                icon: HugeIcon(
+                  icon: isNavigationExpanded
+                      ? HugeIcons.strokeRoundedMenuCollapse
+                      : HugeIcons.strokeRoundedMenu01,
+                  color: colorScheme.scrim,
+                ),
               ),
+              destinations: const [
+                NavigationRailDestination(
+                  icon: Icon(
+                    HugeIcons.strokeRoundedHome01,
+                    size: 16,
+                  ),
+                  label: Text('Página inicial'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(
+                    HugeIcons.strokeRoundedUserGroup,
+                    size: 16,
+                  ),
+                  label: Text('Lista de pessoas'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(
+                    HugeIcons.strokeRoundedGroup01,
+                    size: 16,
+                  ),
+                  label: Text('Lista de equipes'),
+                ),
+              ],
             ),
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(
-                  HugeIcons.strokeRoundedHome01,
-                  size: 16,
-                ),
-                label: Text('Página inicial'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(
-                  HugeIcons.strokeRoundedUserGroup,
-                  size: 16,
-                ),
-                label: Text('Lista de pessoas'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(
-                  HugeIcons.strokeRoundedGroup01,
-                  size: 16,
-                ),
-                label: Text('Lista de equipes'),
-              ),
-            ],
-          ),
           Expanded(
             child: PageView(
               controller: pageController,
