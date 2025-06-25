@@ -6,10 +6,14 @@ import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
 class PeopleViewmodel extends ChangeNotifier {
-  PeopleViewmodel(this._peopleRepository);
+  PeopleViewmodel(this._peopleRepository, this._homeRepository) {
+    _homeRepository.listenToUserChanges((payload) {
+      
+    });
+  }
 
   final PeopleRepository _peopleRepository;
-
+  final HomeRepository _homeRepository;
   late final onFetchPaginatedPeopleCommand = Command2(_fetchPaginated);
 
   late final onDeleteOne = Command1(_onDeleteOne);
@@ -24,7 +28,7 @@ class PeopleViewmodel extends ChangeNotifier {
     );
   }
 
-  AsyncResult<Unit> _onDeleteOne(String uuid) async {
+  AsyncResult<bool> _onDeleteOne(String uuid) async {
     return _peopleRepository.deleteOne(uuid);
   }
 }

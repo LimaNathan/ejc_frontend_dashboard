@@ -22,6 +22,6 @@ class RemotePeopleRepository implements PeopleRepository {
           .lastFiveAwnsersByName(name);
 
   @override
-  AsyncResult<Unit> deleteOne(String uuid) =>
+  AsyncResult<bool> deleteOne(String uuid) =>
       _supabasePeopleService.deleteOne(uuid);
 }

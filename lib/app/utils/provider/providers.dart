@@ -26,7 +26,7 @@ class Providers {
           create: (context) => HomeViewmodel(context.read()),
         ),
         ChangeNotifierProvider(
-          create: (context) => PeopleViewmodel(context.read()),
+          create: (context) => PeopleViewmodel(context.read(), context.read()),
         ),
         ChangeNotifierProvider(
           create: (context) => SearchPeopleViewmodel(context.read()),

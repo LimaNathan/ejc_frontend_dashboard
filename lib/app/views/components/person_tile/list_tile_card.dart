@@ -90,9 +90,12 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
                             ),
                     ),
                     SizedBox(width: size.width * .02),
-                    Text(
-                      widget.person.name,
-                      style: textTheme.labelLarge,
+                    Flexible(
+                      child: Text(
+                        widget.person.name,
+                        style: textTheme.labelLarge,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),

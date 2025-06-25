@@ -27,6 +27,8 @@ class _PeopleListViewState extends State<PeopleListView> {
         .onFetchPaginatedPeopleCommand
       ..execute(0, 7)
       ..addListener(listener);
+
+    peopleViewmodel.onDeleteOne.addListener(listenerDeleteOne);
   }
 
   void listener() {
@@ -39,12 +41,26 @@ class _PeopleListViewState extends State<PeopleListView> {
     }
   }
 
+  void listenerDeleteOne() {
+    if (peopleViewmodel.onDeleteOne.value.isSuccess) {
+      peopleViewmodel //
+          .onFetchPaginatedPeopleCommand
+          .value
+          .when(
+        data: (data) => peopleViewmodel //
+            .onFetchPaginatedPeopleCommand
+            .execute(data.currentPage, 7),
+        orElse: () {},
+      );
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
     peopleViewmodel //
-        .onFetchPaginatedPeopleCommand
-        .removeListener(listener);
+      ..onFetchPaginatedPeopleCommand.removeListener(listener)
+      ..onDeleteOne.removeListener(listenerDeleteOne);
   }
 
   @override
