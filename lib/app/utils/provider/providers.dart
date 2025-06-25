@@ -29,9 +29,6 @@ class Providers {
 
     _blocProviders.addAll(
       [
-        BlocProvider<AuthViewmodelBloc>(
-          create: (context) => AuthViewmodelBloc(context.read()),
-        ),
         BlocProvider<HomeViewmodelBloc>(
           create: (context) => HomeViewmodelBloc(context.read()),
         ),

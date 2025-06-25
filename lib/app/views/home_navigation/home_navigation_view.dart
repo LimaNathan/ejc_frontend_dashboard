@@ -1,5 +1,6 @@
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel.dart';
+
 import 'package:ejc_frontend_dashboard/app/views/home/home_view.dart';
 import 'package:ejc_frontend_dashboard/app/views/home_navigation/components/text_field_search_people.dart';
 import 'package:ejc_frontend_dashboard/app/views/people/people_list_view.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeNavigationView extends StatefulWidget {
@@ -19,6 +21,8 @@ class HomeNavigationView extends StatefulWidget {
 
 class _HomeNavigationViewState extends State<HomeNavigationView> {
   late PageController pageController;
+  late final AuthViewmodel authViewmodel;
+
   bool isNavigationExpanded = false;
   int selectedIndexPage = 0;
 
@@ -31,8 +35,24 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
   @override
   void initState() {
     pageController = PageController(initialPage: selectedIndexPage);
+    authViewmodel = context //
+        .read<AuthViewmodel>();
 
+    authViewmodel.logoutCommand.addListener(_listener);
     super.initState();
+  }
+
+  void _listener() {
+    if (authViewmodel.logoutCommand.value.isSuccess) {
+      context.go(ConstantRoutes.initialRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    authViewmodel.logoutCommand.removeListener(_listener);
   }
 
   @override
@@ -56,105 +76,98 @@ class _HomeNavigationViewState extends State<HomeNavigationView> {
           () => isNavigationExpanded = !isNavigationExpanded,
         );
 
-    return BlocListener<AuthViewmodelBloc, AuthViewmodelState>(
-      listener: (context, state) {
-        if (state is AuthUnlogged) {
-          context.go(ConstantRoutes.initialRoute);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: size.height * 0.09,
-          forceMaterialTransparency: true,
-          backgroundColor: Colors.transparent,
-          leading: Container(
-            margin: EdgeInsets.all(size.height * 0.01),
-            child: Image.asset('assets/logo_ejc.png'),
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: size.height * 0.09,
+        forceMaterialTransparency: true,
+        backgroundColor: Colors.transparent,
+        leading: Container(
+          margin: EdgeInsets.all(size.height * 0.01),
+          child: Image.asset('assets/logo_ejc.png'),
+        ),
+        centerTitle: true,
+        title: TextFieldSearchPeople(),
+        actions: [
+          Row(
+            children: [
+              const CircleAvatar(
+                child: Icon(HugeIcons.strokeRoundedUser),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                user?.email ?? '--',
+                style: textTheme.bodySmall,
+              ),
+              const SizedBox(width: 10),
+              PopupMenuButton(
+                onSelected: (value) {
+                  if (value == 'logout') {
+                    context.read<AuthViewmodel>().logoutCommand.execute();
+                  }
+                },
+                icon: const Icon(HugeIcons.strokeRoundedMenuTwoLine),
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem(
+                      value: 'logout',
+                      child: Text('Sair'),
+                    ),
+                  ];
+                },
+              ),
+            ],
           ),
-          centerTitle: true,
-          title: TextFieldSearchPeople(),
-          actions: [
-            Row(
-              children: [
-                const CircleAvatar(
-                  child: Icon(HugeIcons.strokeRoundedUser),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  user?.email ?? '--',
-                  style: textTheme.bodySmall,
-                ),
-                const SizedBox(width: 10),
-                PopupMenuButton(
-                  onSelected: (value) {
-                    if (value == 'logout') {
-                      context.read<AuthViewmodelBloc>().add(LogoutEvent());
-                    }
-                  },
-                  icon: const Icon(HugeIcons.strokeRoundedMenuTwoLine),
-                  itemBuilder: (context) {
-                    return [
-                      const PopupMenuItem(
-                        value: 'logout',
-                        child: Text('Sair'),
-                      ),
-                    ];
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: selectedIndexPage,
-              useIndicator: true,
-              extended: isNavigationExpanded,
-              onDestinationSelected: onDestinationSelected,
-              leading: IconButton(
-                onPressed: onPressedIcon,
-                icon: HugeIcon(
-                  icon: isNavigationExpanded
-                      ? HugeIcons.strokeRoundedMenuCollapse
-                      : HugeIcons.strokeRoundedMenu01,
-                  color: colorScheme.scrim,
-                ),
-              ),
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(
-                    HugeIcons.strokeRoundedHome01,
-                    size: 16,
-                  ),
-                  label: Text('Página inicial'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(
-                    HugeIcons.strokeRoundedUserGroup,
-                    size: 16,
-                  ),
-                  label: Text('Lista de pessoas'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(
-                    HugeIcons.strokeRoundedGroup01,
-                    size: 16,
-                  ),
-                  label: Text('Lista de equipes'),
-                ),
-              ],
-            ),
-            Expanded(
-              child: PageView(
-                controller: pageController,
-                scrollDirection: Axis.vertical,
-                physics: const NeverScrollableScrollPhysics(),
-                children: pages,
+        ],
+      ),
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: selectedIndexPage,
+            useIndicator: true,
+            extended: isNavigationExpanded,
+            onDestinationSelected: onDestinationSelected,
+            leading: IconButton(
+              onPressed: onPressedIcon,
+              icon: HugeIcon(
+                icon: isNavigationExpanded
+                    ? HugeIcons.strokeRoundedMenuCollapse
+                    : HugeIcons.strokeRoundedMenu01,
+                color: colorScheme.scrim,
               ),
             ),
-          ],
-        ),
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(
+                  HugeIcons.strokeRoundedHome01,
+                  size: 16,
+                ),
+                label: Text('Página inicial'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(
+                  HugeIcons.strokeRoundedUserGroup,
+                  size: 16,
+                ),
+                label: Text('Lista de pessoas'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(
+                  HugeIcons.strokeRoundedGroup01,
+                  size: 16,
+                ),
+                label: Text('Lista de equipes'),
+              ),
+            ],
+          ),
+          Expanded(
+            child: PageView(
+              controller: pageController,
+              scrollDirection: Axis.vertical,
+              physics: const NeverScrollableScrollPhysics(),
+              children: pages,
+            ),
+          ),
+        ],
       ),
     );
   }
