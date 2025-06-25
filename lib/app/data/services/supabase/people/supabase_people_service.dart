@@ -69,8 +69,10 @@ class SupabasePeopleService {
     }
 
     try {
-      final response =
-          await _supabase.client.from('user_teams').delete().eq('_id', uuid);
+      await _supabase.client //
+          .from('user_teams')
+          .delete()
+          .eq('id', uuid);
 
       return const Success(unit);
     } catch (e) {

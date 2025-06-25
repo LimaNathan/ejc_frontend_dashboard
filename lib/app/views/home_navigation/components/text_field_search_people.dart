@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
-import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_tile/list_tile_card.dart';
@@ -12,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TextFieldSearchPeople extends StatefulWidget
     implements PreferredSizeWidget {
-   TextFieldSearchPeople({
+  TextFieldSearchPeople({
     super.key,
     this.team,
     this.composition,
@@ -22,8 +21,7 @@ class TextFieldSearchPeople extends StatefulWidget
   final TeamModel? team;
   final bool? isAddingToTeam;
 
-   List<DetailedTeamComposition>? composition;
-
+  List<DetailedTeamComposition>? composition;
 
   @override
   State<TextFieldSearchPeople> createState() => _TextFieldSearchPeopleState();
@@ -33,6 +31,7 @@ class TextFieldSearchPeople extends StatefulWidget
 }
 
 class _TextFieldSearchPeopleState extends State<TextFieldSearchPeople> {
+  late final SearchPeopleViewmodel searchPeopleViewmodel;
   late FocusNode _focusNode;
   final TextEditingController _controller = TextEditingController();
   final LayerLink _layerLink = LayerLink();
@@ -42,6 +41,8 @@ class _TextFieldSearchPeopleState extends State<TextFieldSearchPeople> {
   @override
   void initState() {
     super.initState();
+
+    searchPeopleViewmodel = context.read<SearchPeopleViewmodel>();
 
     _focusNode = FocusNode()
       ..addListener(() async {
@@ -67,9 +68,10 @@ class _TextFieldSearchPeopleState extends State<TextFieldSearchPeople> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       final query = _controller.text.trim();
       if (query.isNotEmpty) {
-        context.read<SearchPeopleViewmodelBloc>().add(
-              SearchPeopleByNameEvent(name: query),
-            );
+        context
+            .read<SearchPeopleViewmodel>()
+            .onSeachPeopleByNameCommand
+            .execute(query);
         _showOverlay();
       } else {
         _removeOverlay();
@@ -92,42 +94,44 @@ class _TextFieldSearchPeopleState extends State<TextFieldSearchPeople> {
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(8),
-            child: BlocBuilder<SearchPeopleViewmodelBloc,
-                SearchPeopleViewmodelState>(
-              builder: (context, state) {
-                if (state is SearchPeopleViewmodelLoading) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                } else if (state is SearchPeopleViewmodelLoaded) {
-                  final people = state.people;
-                  if (people.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text('Nenhum resultado encontrado.'),
-                    );
-                  }
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: people.length,
-                    itemBuilder: (context, index) => //
-                        ListTilePersonCard(
-                      person: people[index],
-                      resumed: true,
-                      onPressed: _removeOverlay,
-                      isAddingToTeam: widget.isAddingToTeam,
-                      composition: widget.composition,
+            child: ListenableBuilder(
+              listenable: searchPeopleViewmodel.onSeachPeopleByNameCommand,
+              builder: (context, child) {
+                final state = searchPeopleViewmodel.onSeachPeopleByNameCommand;
 
-                    ),
-                  );
-                } else if (state is SearchPeopleViewmodelError) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text('Erro: ${state.error}'),
-                  );
-                }
-                return const SizedBox.shrink();
+                return state.value.when(
+                  running: () => Padding(
+                    padding: EdgeInsets.all(size.width * .025),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  failure: (exception) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text('Erro: $exception'),
+                    );
+                  },
+                  data: (people) {
+                    if (people.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text('Nenhum resultado encontrado.'),
+                      );
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: people.length,
+                      itemBuilder: (context, index) => //
+                          ListTilePersonCard(
+                        person: people[index],
+                        resumed: true,
+                        onPressed: _removeOverlay,
+                        isAddingToTeam: widget.isAddingToTeam,
+                        composition: widget.composition,
+                      ),
+                    );
+                  },
+                  orElse: SizedBox.shrink,
+                );
               },
             ),
           ),

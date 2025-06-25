@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
-import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/person_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';

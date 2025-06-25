@@ -1,5 +1,4 @@
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
-import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/views/home_navigation/components/text_field_search_people.dart';
 import 'package:flutter/material.dart';
