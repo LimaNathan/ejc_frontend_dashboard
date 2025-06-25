@@ -1,5 +1,6 @@
 import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel_bloc.dart';
+
+import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
@@ -25,14 +26,15 @@ class _AuthFormState extends State<AuthForm> {
     final size = MediaQuery.sizeOf(context);
 
     void onPressed() {
-      context.read<AuthViewmodelBloc>().add(
-            LoginEvent(
-              Credentials(
-                email: emailEC.text,
-                password: passwordEC.text,
-              ),
-            ),
-          );
+  final authViewmodel = context.read<AuthViewmodel>();
+
+  authViewmodel.loginCommand(
+    Credentials(
+      email: emailEC.text,
+      password: passwordEC.text,
+    ),
+  );
+
     }
 
     return Container(

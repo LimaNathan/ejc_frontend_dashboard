@@ -17,8 +17,30 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
+
+    final authViewmodel = context.watch<AuthViewmodel>();
+    final result = authViewmodel.loginCommand.result;
+    final isLoading = authViewmodel.loginCommand.isRunning;
+
+
+
+
+if(isLoading) {
+  WidgetsBinding //
+              .instance
+              .addPostFrameCallback((_) => LoadingOverlay.show(context));
+              }
+              else{
+                LoadingOverlay.hide();
+              }
+
     return BlocBuilder<AuthViewmodelBloc, AuthViewmodelState>(
       builder: (context, state) {
         if (state is! AuthLoading) {
