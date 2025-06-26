@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class BasicInfoCard extends StatelessWidget {
   const BasicInfoCard({
@@ -16,7 +17,7 @@ class BasicInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-    return Card(
+    return ShadCard(
       child: Container(
         height: size.height * 0.25,
         padding: EdgeInsets.zero,

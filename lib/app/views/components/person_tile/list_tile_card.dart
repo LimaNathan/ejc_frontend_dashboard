@@ -5,6 +5,7 @@ import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_compo
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/person_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ListTilePersonCard extends StatefulWidget {
   ListTilePersonCard({
@@ -48,17 +49,78 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
           ),
         );
       },
-      child: Card(
-        semanticContainer: false,
-        shadowColor: colorScheme.outline.withValues(alpha: 200),
-        elevation: 1,
-        color: colorScheme //
+      child: ShadCard(
+        // semanticContainer: false,
+        // shadowColor: colorScheme.outline.withValues(alpha: 200),
+        // elevation: 1,
+        backgroundColor: colorScheme //
             .surfaceContainerLowest
             .withValues(alpha: 80),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+
+        leading: CircleAvatar(
+          child: widget.person.photo != null
+              ? ClipOval(
+                  child: Image.memory(
+                    base64Decode(
+                      widget.person.photo!,
+                    ),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                )
+              : const Icon(
+                  HugeIcons.strokeRoundedUserList,
+                ),
         ),
-        child: Container(
+        title: Flexible(
+          child: Padding(
+            padding: EdgeInsets.only(left: size.width * .025),
+            child: Text(
+              'Nome: ',
+              style: Theme.of(context) //
+                  .textTheme
+                  .titleSmall,
+            ),
+          ),
+        ),
+
+        trailing: Row(
+          mainAxisAlignment: !widget.resumed
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.end,
+          children: [
+            Text(
+              '${widget.person.ejcNumber}º EJC',
+              style: textTheme.bodySmall,
+            ),
+            if (!widget.resumed) SizedBox(width: size.width * .01),
+            if (!widget.resumed)
+              SizedBox(
+                width: size.width * .06,
+                child: Text(
+                  widget.circle,
+                  style: textTheme.bodySmall,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(left: size.width * .025),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              widget.person.name,
+              style: textTheme.labelLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+
+        /*  child: Container(
           margin: EdgeInsets.symmetric(
             vertical: size.height * 0.01,
           ),
@@ -128,7 +190,7 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
               ),
             ],
           ),
-        ),
+        ), */
       ),
     );
   }

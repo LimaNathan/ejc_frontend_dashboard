@@ -1,5 +1,6 @@
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class WasWorkedCard extends StatelessWidget {
   const WasWorkedCard({
@@ -19,7 +20,7 @@ class WasWorkedCard extends StatelessWidget {
             'Não serviu em nenhum encontro',
             style: textTheme.bodyMedium,
           )
-        : Card(
+        : ShadCard(
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: size.width * 0.02,
@@ -30,8 +31,7 @@ class WasWorkedCard extends StatelessWidget {
               child: ListView.builder(
                 itemCount: person.teams!.length,
                 itemBuilder: (context, index) {
-                  final teams = person
-                      .teams![ index];
+                  final teams = person.teams![index];
 
                   final teamEJC = size.width < 500
                       ? '${teams.encontro}º EJC:'

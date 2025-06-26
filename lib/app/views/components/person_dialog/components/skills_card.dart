@@ -1,5 +1,6 @@
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SkillsCard extends StatelessWidget {
   const SkillsCard({
@@ -15,7 +16,7 @@ class SkillsCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
+    return ShadCard(
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: size.width * 0.02,

@@ -1,6 +1,7 @@
 import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/people/paginated_result.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/people/people_filter.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,6 +11,7 @@ class SupabasePeopleService {
   AsyncResult<PaginatedResult<PersonModel>> fetchUsersPaginated({
     required int page,
     required int pageSize,
+    PeopleFilter? filter,
   }) async {
     final from = page * pageSize;
     final to = from + pageSize - 1;
@@ -17,20 +19,27 @@ class SupabasePeopleService {
     final response = await _supabase.client
         .from('users')
         .select('*, user_teams(*, teams(*))')
+        .match(filter != null ? filter.toJson() : {})
+        .ilike('nome', '%${filter?.nome ?? ''}%')
         .order('created_at', ascending: false)
         .range(from, to)
         .onError(
-          (handleError, stackTrace) => throw AppSupabaseFetchException(
+          (handleError, _) => throw AppSupabaseFetchException(
             handleError.toString(),
           ),
         );
 
-    final countResponse =
-        await _supabase.client.from('users').select('id').count().onError(
-              (handleError, stackTrace) => throw AppSupabaseFetchException(
-                handleError.toString(),
-              ),
-            );
+    final countResponse = await _supabase.client //
+        .from('users')
+        .select('id')
+        .match(filter != null ? filter.toJson() : {})
+        .ilike('nome', '%${filter?.nome ?? ''}%')
+        .count()
+        .onError(
+          (handleError, _) => throw AppSupabaseFetchException(
+            handleError.toString(),
+          ),
+        );
 
     final totalItems = countResponse.count;
     final totalPages = (totalItems / pageSize).ceil();
@@ -68,7 +77,7 @@ class SupabasePeopleService {
       await _supabase.client //
           .from('user_teams')
           .delete()
-          .eq('id', uuid)
+          .eq('user_id', uuid)
           .select();
 
       final user = await _supabase.client //

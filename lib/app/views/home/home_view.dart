@@ -73,7 +73,7 @@ class _HomeViewState extends State<HomeView> {
                               data: (value) => value.toString(),
                               orElse: () => '--',
                             ),
-                            title: 'Formulários respondidos no total',
+                            title: 'Formulários respondidos nos últimos 3 dias',
                           );
                         },
                       ),

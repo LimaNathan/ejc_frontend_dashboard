@@ -1,9 +1,13 @@
+import 'package:ejc_frontend_dashboard/app/domains/dtos/people/people_filter.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/base/base_view_background.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/no_data/no_data_component.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_tile/list_view_builder_person_tile.dart';
+import 'package:ejc_frontend_dashboard/app/views/people/components/filter/input_name.dart';
+import 'package:ejc_frontend_dashboard/app/views/people/components/filter/select_circle.dart';
+import 'package:ejc_frontend_dashboard/app/views/people/components/filter/select_encounter.dart';
 import 'package:ejc_frontend_dashboard/app/views/people/components/pagination_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +22,7 @@ class PeopleListView extends StatefulWidget {
 
 class _PeopleListViewState extends State<PeopleListView> {
   late final PeopleViewmodel peopleViewmodel;
+  final PeopleFilter filter = PeopleFilter();
   @override
   void initState() {
     super.initState();
@@ -25,7 +30,7 @@ class _PeopleListViewState extends State<PeopleListView> {
 
     peopleViewmodel //
         .onFetchPaginatedPeopleCommand
-      ..execute(0, 7)
+      ..execute((page: 0, size: 7), filter)
       ..addListener(listener);
 
     peopleViewmodel.onDeleteOne.addListener(listenerDeleteOne);
@@ -36,7 +41,9 @@ class _PeopleListViewState extends State<PeopleListView> {
     if (state.value.isFailure) {
       showCustomSnackbar(
         context,
-        message: state.getCachedFailure().toString(),
+        message: state //
+            .getCachedFailure()
+            .toString(),
       );
     }
   }
@@ -49,7 +56,7 @@ class _PeopleListViewState extends State<PeopleListView> {
           .when(
         data: (data) => peopleViewmodel //
             .onFetchPaginatedPeopleCommand
-            .execute(data.currentPage, 7),
+            .execute((page: data.currentPage, size: 7), filter),
         orElse: () {},
       );
     }
@@ -65,8 +72,12 @@ class _PeopleListViewState extends State<PeopleListView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-
+    void onSearch() => peopleViewmodel //
+        .onFetchPaginatedPeopleCommand
+        .execute((page: 0, size: 7), filter);
     return BaseViewBackground(
       child: SingleChildScrollView(
         child: Padding(
@@ -79,6 +90,53 @@ class _PeopleListViewState extends State<PeopleListView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const TitlePeopleListView(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Filtros',
+                    style: textTheme //
+                        .bodyLarge
+                        ?.copyWith(
+                      color: colorScheme //
+                          .onSurface
+                          .withValues(alpha: 100),
+                    ),
+                  ),
+                  OverflowBar(
+                    overflowAlignment: OverflowBarAlignment.end,
+                    children: [
+                      InputName(
+                        onChanged: (value) => filter.nome = value,
+                        onSaved: (value) => onSearch(),
+                      ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: SelectCircle(
+                              onChanged: (value) {
+                                filter.circulo = value ?? 'Não informado';
+                              },
+                            ),
+                          ),
+                          Flexible(
+                            child: SelectEncounter(
+                              onChanged: (value) {
+                                filter.encontro = value! + 1;
+                              },
+                            ),
+                          ),
+                          IconButton.filled(
+                            onPressed: onSearch,
+                            icon: const Icon(HugeIcons.strokeRoundedSearch01),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: size.height * .025),
               ListenableBuilder(
                 listenable: peopleViewmodel.onFetchPaginatedPeopleCommand,
                 builder: (context, child) {
@@ -108,7 +166,10 @@ class _PeopleListViewState extends State<PeopleListView> {
                           context
                               .read<PeopleViewmodel>()
                               .onFetchPaginatedPeopleCommand
-                              .execute(data.currentPage - 1, 7);
+                              .execute(
+                            (page: data.currentPage - 1, size: 7),
+                            filter,
+                          );
                         }
                       }
 
@@ -124,7 +185,10 @@ class _PeopleListViewState extends State<PeopleListView> {
                           context
                               .read<PeopleViewmodel>()
                               .onFetchPaginatedPeopleCommand
-                              .execute(data.currentPage + 1, 7);
+                              .execute(
+                            (page: data.currentPage + 1, size: 7),
+                            filter,
+                          );
                         }
                       }
 
@@ -160,7 +224,10 @@ class _PeopleListViewState extends State<PeopleListView> {
                                     context
                                         .read<PeopleViewmodel>()
                                         .onFetchPaginatedPeopleCommand
-                                        .execute(index, 7);
+                                        .execute(
+                                      (page: index, size: 7),
+                                      filter,
+                                    );
                                   },
                                 ),
                                 if (isMobile)

@@ -9,6 +9,7 @@ import 'package:ejc_frontend_dashboard/app/views/teams/components/teams_menu.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class TeamListView extends StatefulWidget {
   const TeamListView({super.key});
@@ -110,7 +111,7 @@ class _AddTeamCardState extends State<AddTeamCard> {
     final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
+    return ShadCard(
       child: InkWell(
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         onTap: () {

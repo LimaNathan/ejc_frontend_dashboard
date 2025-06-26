@@ -4,6 +4,7 @@ import 'package:ejc_frontend_dashboard/app/views/home_navigation/components/text
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class TeamCompositionView extends StatefulWidget {
   const TeamCompositionView({
@@ -41,7 +42,7 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: Card(
+            child: ShadCard(
               child: InkWell(
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
                 onTap: () {
