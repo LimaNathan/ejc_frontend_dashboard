@@ -36,7 +36,8 @@ class _PaginationBuilderState extends State<PaginationBuilder> {
             alignment: Alignment.center,
             height: 36,
             width: 36,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
+            // margin: const EdgeInsets.symmetric(horizontal: 2),
+
             decoration: BoxDecoration(
               border: widget.currentPage != index
                   ? null
@@ -76,26 +77,35 @@ class _PaginationBuilderState extends State<PaginationBuilder> {
         addPage(i);
       }
     } else {
-      if (widget.currentPage < 3) {
+      final isMobile = MediaQuery.sizeOf(context).width < 800;
+      if (widget.currentPage < (isMobile ? 1 : 3)) {
         // Início
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < (isMobile ? 1 : 4); i++) {
           addPage(i);
         }
         addEllipsis();
         addPage(widget.totalPages - 1);
-      } else if (widget.currentPage > widget.totalPages - 4) {
+      } else if (widget.currentPage > widget.totalPages - (isMobile ? 2 : 4)) {
         // Fim
         addPage(0);
         addEllipsis();
-        for (var i = widget.totalPages - 4; i < widget.totalPages; i++) {
+        for (var i = widget.totalPages - (isMobile ? 2 : 4);
+            i < widget.totalPages;
+            i++) {
           addPage(i);
         }
       } else {
         // Meio
         addPage(0);
         addEllipsis();
-        for (var i = widget.currentPage - 1; i <= widget.currentPage + 1; i++) {
-          addPage(i);
+        if (isMobile) {
+          addPage(widget.currentPage);
+        } else {
+          for (var i = widget.currentPage - 1;
+              i <= widget.currentPage + 1;
+              i++) {
+            addPage(i);
+          }
         }
         addEllipsis();
         addPage(widget.totalPages - 1);

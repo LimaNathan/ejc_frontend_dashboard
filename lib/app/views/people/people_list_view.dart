@@ -89,78 +89,99 @@ class _PeopleListViewState extends State<PeopleListView> {
                     running: () => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                    data: (data) => Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (data.items.isEmpty)
-                          const Center(child: NoDataComponent()),
-                        if (data.items.isNotEmpty)
-                          ListViewBuilderPersonTile(persons: data.items),
-                        if (data.items.isNotEmpty)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextButton.icon(
-                                onPressed: () {
-                                  if (data.currentPage == 0) {
-                                    showCustomSnackbar(
-                                      context,
-                                      message:
-                                          'Você já está na primeira página',
-                                      type: SnackbarType.error,
-                                    );
-                                    return;
-                                  } else {
+                    data: (data) {
+                      const iconBack = Icon(HugeIcons.strokeRoundedArrowLeft01);
+
+                      const iconFoward = Icon(
+                        HugeIcons.strokeRoundedArrowRight01,
+                      );
+                      final isMobile = MediaQuery.sizeOf(context).width < 800;
+                      void onPressedBack() {
+                        if (data.currentPage == 0) {
+                          showCustomSnackbar(
+                            context,
+                            message: 'Você já está na primeira página',
+                            type: SnackbarType.error,
+                          );
+                          return;
+                        } else {
+                          context
+                              .read<PeopleViewmodel>()
+                              .onFetchPaginatedPeopleCommand
+                              .execute(data.currentPage - 1, 7);
+                        }
+                      }
+
+                      void onPressedFoward() {
+                        if (data.currentPage + 1 == data.totalPages) {
+                          showCustomSnackbar(
+                            context,
+                            message: 'Você está na última página',
+                            type: SnackbarType.error,
+                          );
+                          return;
+                        } else {
+                          context
+                              .read<PeopleViewmodel>()
+                              .onFetchPaginatedPeopleCommand
+                              .execute(data.currentPage + 1, 7);
+                        }
+                      }
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (data.items.isEmpty)
+                            const Center(child: NoDataComponent()),
+                          if (data.items.isNotEmpty)
+                            ListViewBuilderPersonTile(persons: data.items),
+                          if (data.items.isNotEmpty)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                if (isMobile)
+                                  IconButton(
+                                    onPressed: onPressedBack,
+                                    icon: iconBack,
+                                  )
+                                else
+                                  TextButton.icon(
+                                    onPressed: onPressedBack,
+                                    label: Text(
+                                      size.width < 800 ? '' : 'Anterior',
+                                    ),
+                                    icon: iconBack,
+                                  ),
+                                PaginationBuilder(
+                                  totalPages: data.totalPages,
+                                  currentPage: data.currentPage,
+                                  onTap: (index) {
                                     context
                                         .read<PeopleViewmodel>()
                                         .onFetchPaginatedPeopleCommand
-                                        .execute(data.currentPage - 1, 7);
-                                  }
-                                },
-                                label: Text(size.width < 800 ? '' : 'Anterior'),
-                                icon: const Icon(
-                                  HugeIcons.strokeRoundedArrowLeft01,
+                                        .execute(index, 7);
+                                  },
                                 ),
-                              ),
-                              PaginationBuilder(
-                                totalPages: data.totalPages,
-                                currentPage: data.currentPage,
-                                onTap: (index) {
-                                  context
-                                      .read<PeopleViewmodel>()
-                                      .onFetchPaginatedPeopleCommand
-                                      .execute(index, 7);
-                                },
-                              ),
-                              TextButton.icon(
-                                onPressed: () {
-                                  if (data.currentPage + 1 == data.totalPages) {
-                                    showCustomSnackbar(
-                                      context,
-                                      message: 'Você está na última página',
-                                      type: SnackbarType.error,
-                                    );
-                                    return;
-                                  } else {
-                                    context
-                                        .read<PeopleViewmodel>()
-                                        .onFetchPaginatedPeopleCommand
-                                        .execute(data.currentPage + 1, 7);
-                                  }
-                                },
-                                label: Text(
-                                  size.width < 800 ? '' : 'Próximo',
-                                ),
-                                iconAlignment: IconAlignment.end,
-                                icon: const Icon(
-                                  HugeIcons.strokeRoundedArrowRight01,
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
+                                if (isMobile)
+                                  IconButton(
+                                    onPressed: onPressedFoward,
+                                    icon: iconFoward,
+                                  )
+                                else
+                                  TextButton.icon(
+                                    onPressed: onPressedFoward,
+                                    label: Text(
+                                      size.width < 800 ? '' : 'Próximo',
+                                    ),
+                                    iconAlignment: IconAlignment.end,
+                                    icon: iconFoward,
+                                  ),
+                              ],
+                            ),
+                        ],
+                      );
+                    },
                     orElse: Container.new,
                   );
                 },
