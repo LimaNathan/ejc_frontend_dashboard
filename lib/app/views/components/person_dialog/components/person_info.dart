@@ -44,7 +44,7 @@ class _PersonInfoState extends State<PersonInfo> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            SelectableText(
               widget.person.name,
               style: textTheme.headlineMedium,
             ),
@@ -80,8 +80,8 @@ class _PersonInfoState extends State<PersonInfo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RichText(
-                    text: TextSpan(
+                  SelectableText.rich(
+                    TextSpan(
                       text: 'Data de nascimento: ',
                       style: textTheme.bodyLarge,
                       children: [
@@ -92,8 +92,8 @@ class _PersonInfoState extends State<PersonInfo> {
                       ],
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
+                  SelectableText.rich(
+                    TextSpan(
                       text: 'Círculo de origem: ',
                       style: textTheme.bodyLarge,
                       children: [
@@ -106,8 +106,8 @@ class _PersonInfoState extends State<PersonInfo> {
                       ],
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
+                  SelectableText.rich(
+                    TextSpan(
                       text: 'Fez o: ',
                       style: textTheme.bodyLarge,
                       children: [
@@ -118,8 +118,8 @@ class _PersonInfoState extends State<PersonInfo> {
                       ],
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
+                  SelectableText.rich(
+                    TextSpan(
                       text: 'Contatos: ',
                       style: textTheme.bodyLarge,
                       children: [

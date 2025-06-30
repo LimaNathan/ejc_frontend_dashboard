@@ -31,6 +31,9 @@ class Providers {
         ChangeNotifierProvider(
           create: (context) => SearchPeopleViewmodel(context.read()),
         ),
+        ChangeNotifierProvider(
+          create: (context) => TeamCompositionViewmodel(context.read()),
+        ),
       ],
     );
   }

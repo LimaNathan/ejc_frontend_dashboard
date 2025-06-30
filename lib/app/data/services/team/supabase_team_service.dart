@@ -64,7 +64,10 @@ class SupabaseTeamService {
       final response = await _supabase.client
           .from('team_composition')
           .select(
-            'team_id, user_id, role, users(nome, foto, telefones)',
+            'team_id, '
+            'user_id, '
+            'role, '
+            'users(nome, foto, telefones)',
           )
           .eq(
             'team_id',
@@ -76,6 +79,18 @@ class SupabaseTeamService {
             .map(DetailedTeamComposition.fromJson)
             .toList(),
       );
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
+
+  AsyncResult<Unit> setUserTeamComposition(TeamComposition team) async {
+    try {
+      await _supabase.client //
+          .from('team_composition')
+          .insert(team.toJson());
+
+      return const Success(unit);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
     }

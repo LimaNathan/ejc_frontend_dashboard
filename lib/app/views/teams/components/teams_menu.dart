@@ -3,20 +3,20 @@
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/team_composition/fetch_teams/fetch_teams_bloc.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/team_composition/team_composition_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:provider/provider.dart';
 
 class TeamsMenu extends StatefulWidget {
   TeamsMenu({
-    required this.state,
     required this.compositions,
     this.team,
     super.key,
   });
   TeamModel? team;
-  final FetchTeamState state;
+
   final List<TeamComposition> compositions;
 
   @override
@@ -24,6 +24,15 @@ class TeamsMenu extends StatefulWidget {
 }
 
 class _TeamsMenuState extends State<TeamsMenu> {
+  late final TeamCompositionViewmodel teamCompositionViewmodel;
+
+  @override
+  void initState() {
+    super.initState();
+    teamCompositionViewmodel = context.read<TeamCompositionViewmodel>()
+      ..onFetchTeamsCommand.execute();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -60,65 +69,63 @@ class _TeamsMenuState extends State<TeamsMenu> {
               ],
             ),
             SizedBox(height: size.height * 0.05),
-            PopupMenuButton<TeamModel>(
-              offset: const Offset(0, 40),
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Container(
-                width: size.width * 0.25,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colorScheme.outline),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.team?.name ?? 'Equipes...',
-                      style: textTheme.bodyMedium,
-                    ),
-                    const Spacer(),
-                    Icon(
-                      HugeIcons.strokeRoundedArrowDown01,
-                      size: 20,
-                      color: colorScheme.onSurface,
-                    ),
-                  ],
-                ),
-              ),
-              itemBuilder: (context) {
-                if (widget.state is FetchTeamSuccess) {
-                  return (widget.state as FetchTeamSuccess)
-                      .teams
-                      .map((toElement) {
-                    return PopupMenuItem<TeamModel>(
-                      value: toElement,
-                      onTap: () => setState(() {
-                        widget.team = toElement;
-                      }),
-                      child: Text(toElement.name),
-                    );
-                  }).toList();
-                }
+            ListenableBuilder(
+                listenable: teamCompositionViewmodel.onFetchTeamsCommand,
+                builder: (context, _) {
+                  return teamCompositionViewmodel //
+                      .onFetchTeamsCommand
+                      .value
+                      .when(
+                    data: (data) {
+                      final itens = data.map((toElement) {
+                        return PopupMenuItem<TeamModel>(
+                          value: toElement,
+                          onTap: () => setState(() {
+                            widget.team = toElement;
+                          }),
+                          child: Text(toElement.name),
+                        );
+                      }).toList();
 
-                if (widget.state is FetchTeamError) {
-                  return [
-                    PopupMenuItem<TeamModel>(
-                      child: Text((widget.state as FetchTeamError).error),
-                    ),
-                  ];
-                }
-
-                return [];
-              },
-            ),
+                      return PopupMenuButton<TeamModel>(
+                        offset: const Offset(0, 40),
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Container(
+                          width: size.width * 0.25,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: colorScheme.outline),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.team?.name ?? 'Equipes...',
+                                style: textTheme.bodyMedium,
+                              ),
+                              const Spacer(),
+                              Icon(
+                                HugeIcons.strokeRoundedArrowDown01,
+                                size: 20,
+                                color: colorScheme.onSurface,
+                              ),
+                            ],
+                          ),
+                        ),
+                        itemBuilder: (context) => itens,
+                      );
+                    },
+                    orElse: Container.new,
+                  );
+                }),
             SizedBox(height: size.height * 0.03),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -2,7 +2,6 @@ import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.da
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
-import 'package:ejc_frontend_dashboard/app/viewmodel/team_composition/fetch_teams/fetch_teams_bloc.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/base/base_view_background.dart';
 import 'package:ejc_frontend_dashboard/app/views/teams/components/teams_menu.dart';
@@ -19,52 +18,60 @@ class TeamListView extends StatefulWidget {
 }
 
 class _TeamListViewState extends State<TeamListView> {
-  late FetchTeamBloc blocTeams;
-  late TeamCompositionViewmodelBloc blocCompositions;
+  late final TeamCompositionViewmodel teamViewmodel;
 
   @override
   void initState() {
     super.initState();
-    blocCompositions = TeamCompositionViewmodelBloc(context.read())
-      ..add(OnFetchAllCompositions());
+
+    teamViewmodel = context.read<TeamCompositionViewmodel>();
+
+    teamViewmodel.onFetchAllCompositionCommand
+      ..execute()
+      ..addListener(fetchAllCompositionsListener);
+  }
+
+  void fetchAllCompositionsListener() {
+    if (teamViewmodel.onFetchAllCompositionCommand.value.isFailure) {
+      showCustomSnackbar(
+        context,
+        type: SnackbarType.error,
+        message: teamViewmodel.onFetchAllCompositionCommand
+            .getCachedFailure()
+            .toString(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    teamViewmodel //
+        .onFetchAllCompositionCommand
+        .removeListener(fetchAllCompositionsListener);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => blocCompositions,
-      child: BlocBuilder<TeamCompositionViewmodelBloc,
-          TeamCompositionViewmodelState>(
-        builder: (context, state) {
-          if (state is TeamCompositionViewmodelLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is TeamCompositionError) {
-            showCustomSnackbar(
-              context,
-              message: state.message,
-              type: SnackbarType.error,
-            );
-          }
-
-          if (state is LoadedAllCompositions) {
+    return ListenableBuilder(
+      listenable: teamViewmodel,
+      builder: (context, child) {
+        return teamViewmodel.onFetchAllCompositionCommand.value.when(
+          data: (data) {
             return BaseViewBackground(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (state.compositions.isEmpty) const NoTeamsComponent(),
-                  AddTeamCard(compositions: state.compositions),
+                  if (data.isEmpty) const NoTeamsComponent(),
+                  AddTeamCard(compositions: data),
                 ],
               ),
             );
-          }
-          return BaseViewBackground(
-            child: Container(),
-          );
-        },
-      ),
+          },
+          orElse: Container.new,
+        );
+      },
     );
   }
 }
@@ -117,20 +124,7 @@ class _AddTeamCardState extends State<AddTeamCard> {
         onTap: () {
           showDialog<void>(
             context: context,
-            builder: (context) => BlocProvider(
-              create: (context) => FetchTeamBloc //
-                  (context.read())
-                ..add(OnFetchAllTeams()),
-              child: BlocBuilder<FetchTeamBloc, FetchTeamState>(
-                builder: (context, state) {
-                  return TeamsMenu(
-                    team: team,
-                    state: state,
-                    compositions: widget.compositions,
-                  );
-                },
-              ),
-            ),
+            builder: (context) => TeamsMenu(compositions: widget.compositions),
           );
         },
         child: SizedBox(

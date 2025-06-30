@@ -5,7 +5,6 @@ import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.da
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:result_dart/result_dart.dart';
 
-
 class RemoteTeamsRepository implements TeamsRepository {
   final SupabaseTeamService _supabaseTeamService = SupabaseTeamService();
 
@@ -22,5 +21,10 @@ class RemoteTeamsRepository implements TeamsRepository {
   @override
   AsyncResult<List<TeamModel>> fetchTeams() {
     return _supabaseTeamService.getTeams();
+  }
+
+  @override
+  AsyncResult<Unit> setUserTeamComposition(TeamComposition team) {
+    return _supabaseTeamService.setUserTeamComposition(team);
   }
 }

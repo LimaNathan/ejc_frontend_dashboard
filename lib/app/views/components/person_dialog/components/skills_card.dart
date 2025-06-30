@@ -17,6 +17,7 @@ class SkillsCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return ShadCard(
+      width: size.width * .3,
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: size.width * 0.02,
