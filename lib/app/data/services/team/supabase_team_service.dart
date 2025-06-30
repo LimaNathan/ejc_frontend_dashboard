@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
@@ -89,6 +91,21 @@ class SupabaseTeamService {
       await _supabase.client //
           .from('team_composition')
           .insert(team.toJson());
+
+      await Isolate.run(() async {
+        final currentTeam = await _supabase.client
+            .from('teams')
+            .select()
+            .eq('id', team.teamId)
+            .single()
+            .withConverter(TeamModel.fromJson);
+
+        await _supabase.client //
+            .from('users')
+            .update({
+          'equipe_atual': currentTeam.name,
+        }).eq('id', team.userId);
+      });
 
       return const Success(unit);
     } catch (e) {

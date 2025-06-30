@@ -55,7 +55,7 @@ class _TeamListViewState extends State<TeamListView> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: teamViewmodel,
+      listenable: teamViewmodel.onFetchAllCompositionCommand,
       builder: (context, child) {
         return teamViewmodel.onFetchAllCompositionCommand.value.when(
           data: (data) {

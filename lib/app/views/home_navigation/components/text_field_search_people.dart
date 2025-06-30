@@ -127,6 +127,7 @@ class _TextFieldSearchPeopleState extends State<TextFieldSearchPeople> {
                         onPressed: _removeOverlay,
                         isAddingToTeam: widget.isAddingToTeam,
                         composition: widget.composition,
+                        team: widget.team,
                       ),
                     );
                   },

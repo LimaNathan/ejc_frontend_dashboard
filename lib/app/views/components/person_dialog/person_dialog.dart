@@ -5,9 +5,10 @@ import 'dart:convert';
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/enum/team_role.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
-import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/people/people_viewmodel.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/team_composition/team_composition_viewmodel.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/person_info.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/skills_card.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/components/was_worked_card.dart';
@@ -34,12 +35,14 @@ class PersonDialog extends StatefulWidget {
 
 class _PersonDialogState extends State<PersonDialog> {
   late final PeopleViewmodel peopleViewmodel;
+  late final TeamCompositionViewmodel teamCompositionViewmodel;
 
   @override
   void initState() {
     super.initState();
 
     peopleViewmodel = context.read<PeopleViewmodel>();
+    teamCompositionViewmodel = context.read<TeamCompositionViewmodel>();
 
     peopleViewmodel.onDeleteOne.addListener(listener);
 
@@ -139,29 +142,36 @@ class _PersonDialogState extends State<PersonDialog> {
                       ),
                       FilledButton(
                         onPressed: () {
-                          final teamComposition =
-                              DetailedTeamComposition.fromPersonAndTeam(
-                            widget.person,
-                            widget.team!,
-                            TeamRole.integrante,
+                          teamCompositionViewmodel.onAddToTeam.execute(
+                            TeamComposition(
+                              teamId: widget.team?.uuid ?? '',
+                              userId: widget.person.uuid,
+                              role: TeamRole.integrante,
+                            ),
                           );
+                          // final teamComposition =
+                          //     DetailedTeamComposition.fromPersonAndTeam(
+                          //   widget.person,
+                          //   widget.team,
+                          //   TeamRole.integrante,
+                          // );
 
-                          if (widget.composition != null &&
-                              widget.composition!.contains(teamComposition)) {
-                            showCustomSnackbar(
-                              context,
-                              message: 'Encontrista já está nessa equipe',
-                            );
-                          }
+                          // if (widget.composition != null &&
+                          //     widget.composition!.contains(teamComposition)) {
+                          //   showCustomSnackbar(
+                          //     context,
+                          //     message: 'Encontrista já está nessa equipe',
+                          //   );
+                          // }
 
-                          if (widget.composition == null) {
-                            widget.composition = [teamComposition];
-                          }
+                          // if (widget.composition == null) {
+                          //   widget.composition = [teamComposition];
+                          // }
 
-                          if (widget.composition != null &&
-                              !widget.composition!.contains(teamComposition)) {
-                            widget.composition!.add(teamComposition);
-                          }
+                          // if (widget.composition != null &&
+                          //     !widget.composition!.contains(teamComposition)) {
+                          //   widget.composition!.add(teamComposition);
+                          // }
                         },
                         child: const Text(
                           'Adicionar na equipe',

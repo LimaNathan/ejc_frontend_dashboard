@@ -11,6 +11,7 @@ class TeamCompositionViewmodel extends ChangeNotifier {
 
   late final onFetchAllCompositionCommand = Command0(_fetchAllCompositions);
   late final onFetchTeamsCommand = Command0(_fetchTeams);
+  late final onAddToTeam = Command1(_setUserTeamComposition);
 
   AsyncResult<List<TeamComposition>> _fetchAllCompositions() async {
     return _teamRepository.fetchAllCompositions();
@@ -18,5 +19,9 @@ class TeamCompositionViewmodel extends ChangeNotifier {
 
   AsyncResult<List<TeamModel>> _fetchTeams() async {
     return _teamRepository.fetchTeams();
+  }
+
+  AsyncResult<Unit> _setUserTeamComposition(TeamComposition team) {
+    return _teamRepository.setUserTeamComposition(team);
   }
 }

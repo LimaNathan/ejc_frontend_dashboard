@@ -28,11 +28,11 @@ class DetailedTeamComposition extends TeamComposition {
 
   factory DetailedTeamComposition.fromPersonAndTeam(
     PersonModel person,
-    TeamModel team,
+    TeamModel? team,
     TeamRole role,
   ) {
     return DetailedTeamComposition(
-      teamId: team.uuid!,
+      teamId: team?.uuid ?? '',
       userId: person.uuid,
       role: role,
       name: person.name,

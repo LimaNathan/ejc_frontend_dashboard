@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/person_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -15,11 +16,13 @@ class ListTilePersonCard extends StatefulWidget {
     this.isAddingToTeam,
     this.composition,
     this.onPressed,
+    this.team,
     super.key,
   });
 
   final PersonModel person;
   final bool resumed;
+  final TeamModel? team;
   final String circle;
   final void Function()? onPressed;
   List<DetailedTeamComposition>? composition;
@@ -46,6 +49,7 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
             person: widget.person,
             isAddingToTeam: widget.isAddingToTeam,
             composition: widget.composition,
+            team: widget.team,
           ),
         );
       },
