@@ -26,8 +26,6 @@ dependencies:
   shadcn_ui: ^0.22.5
   supabase_flutter: ^2.8.3
 
-
-  flutter_web_plugins: any
 dev_dependencies:
   bloc_test: ^9.1.7
   build_runner: ^2.4.13
@@ -38,7 +36,7 @@ dev_dependencies:
   mocktail: ^1.0.4
   very_good_analysis: ^6.0.0
 
-  path: any
+  
 flutter:
   uses-material-design: true
   generate: true

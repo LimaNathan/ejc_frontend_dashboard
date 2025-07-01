@@ -32,6 +32,7 @@ class _TeamUserCardState extends State<TeamUserCard> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final image = Image.memory(
       base64Decode(widget.element.foto.split(',').last),
       height: size.height * .15,
@@ -49,7 +50,23 @@ class _TeamUserCardState extends State<TeamUserCard> {
                 onTap: () => showImageViewer(context, image.image),
                 child: image,
               ),
-              Text(widget.element.name),
+              Row(
+                spacing: size.width * .0025,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(widget.element.name),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      widget.element.role?.title ?? '',
+                      style: textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
               ...widget.element.telefones.map(Text.new),
             ],
           ),
@@ -75,6 +92,5 @@ class _TeamUserCardState extends State<TeamUserCard> {
         ),
       ],
     );
-    ;
   }
 }

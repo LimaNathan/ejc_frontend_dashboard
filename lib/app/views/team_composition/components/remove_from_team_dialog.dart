@@ -35,7 +35,7 @@ class _RemoveFromTeamDialogState extends State<RemoveFromTeamDialog> {
             context
                 .read<TeamCompositionViewmodel>()
                 .onRemoveUserTeamComposition
-                .execute(widget.person.userId);
+                .execute(widget.person.userId ?? '');
             Navigator.pop(context);
           },
           child: const Text('Sim'),

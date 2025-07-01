@@ -177,7 +177,7 @@ class _PersonDialogState extends State<PersonDialog> {
                             TeamComposition(
                               teamId: widget.team?.uuid ?? '',
                               userId: widget.person.uuid,
-                              role: role!,
+                              role: role,
                             ),
                           );
                         },

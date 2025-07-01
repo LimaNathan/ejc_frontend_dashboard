@@ -3,8 +3,8 @@ import 'package:ejc_frontend_dashboard/app/domains/dtos/team/enum/team_role.dart
 class TeamComposition {
   TeamComposition({
     required this.teamId,
-    required this.userId,
-    required this.role,
+     this.userId,
+     this.role,
   });
 
   factory TeamComposition.fromJson(Map<String, Object?> json) =>
@@ -17,11 +17,11 @@ class TeamComposition {
   Map<String, dynamic> toJson() => {
         'team_id': teamId,
         'user_id': userId,
-        'role': role.value,
+        'role': role?.value,
       };
 
   final String teamId;
 
-  final String userId;
-  final TeamRole role;
+   String? userId;
+   TeamRole? role;
 }

@@ -54,7 +54,7 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: size.height * 0.09,

@@ -196,6 +196,24 @@ class _PeopleListViewState extends State<PeopleListView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'Total: ',
+                                children: [
+                                  TextSpan(
+                                    text: peopleViewmodel
+                                            .onFetchPaginatedPeopleCommand
+                                            .getCachedSuccess()
+                                            ?.totalItems
+                                            .toString() ??
+                                        '',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                           if (data.items.isEmpty)
                             const Center(child: NoDataComponent()),
                           if (data.items.isNotEmpty)

@@ -53,16 +53,24 @@ class SupabaseTeamService {
 
   AsyncResult<List<TeamComposition>> getCompositions() async {
     try {
-      final response = await _supabase //
-          .client
-          .rpc('get_unique_team_ids')
+      final response = await _supabase.client
+          .from('team_compositions')
+          .select()
           .withConverter(
-            (converter) => (converter as List)
-                .map((e) => TeamComposition.fromJson(e as Map<String, dynamic>))
-                .toList()
-                .cast<TeamComposition>(),
-          )
-          .onError((error, _) {
+        (data) {
+          final compositions = (data as List)
+              .map((e) => TeamComposition.fromJson(e as Map<String, dynamic>))
+              .toList();
+
+          // Remover duplicados por `teamId`, mantendo o primeiro encontrado
+          final uniqueCompositions = <String, TeamComposition>{};
+          for (final item in compositions) {
+            uniqueCompositions.putIfAbsent(item.teamId, () => item);
+          }
+
+          return uniqueCompositions.values.toList();
+        },
+      ).onError((error, _) {
         log(error.toString());
         throw AppSupabaseFetchException(error.toString());
       });
@@ -124,7 +132,7 @@ class SupabaseTeamService {
           .update({
             'equipe_atual': currentTeam.name,
           })
-          .eq('id', team.userId)
+          .eq('id', team.userId ?? '')
           .onError((error, _) {
             log(error.toString());
             throw AppSupabaseFetchException(error.toString());
