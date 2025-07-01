@@ -1,24 +1,55 @@
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
-import 'package:ejc_frontend_dashboard/app/views/home_navigation/components/text_field_search_people.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/team_composition/team_composition_viewmodel.dart';
+import 'package:ejc_frontend_dashboard/app/views/team_composition/components/add_new_user_on_team_card.dart';
+import 'package:ejc_frontend_dashboard/app/views/team_composition/components/team_user_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class TeamCompositionView extends StatefulWidget {
   const TeamCompositionView({
     required this.team,
     super.key,
   });
-  final TeamModel team;
+  final TeamModel? team;
 
   @override
   State<TeamCompositionView> createState() => _TeamCompositionViewState();
 }
 
 class _TeamCompositionViewState extends State<TeamCompositionView> {
+  late final TeamCompositionViewmodel teamCompositionViewmodel;
   List<DetailedTeamComposition>? composition;
+
+  @override
+  void initState() {
+    super.initState();
+
+    teamCompositionViewmodel = context.read<TeamCompositionViewmodel>()
+      ..onFindTeamCompositionById.addListener(listener);
+  }
+
+  void listener() {
+    composition = teamCompositionViewmodel //
+        .onFindTeamCompositionById
+        .value
+        .when(
+      data: (data) {
+        composition = data;
+        return null;
+      },
+      orElse: () {},
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    teamCompositionViewmodel.onFindTeamCompositionById.removeListener(listener);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,76 +67,52 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
           onPressed: context.pop,
         ),
         centerTitle: true,
-        title: Text(widget.team.name),
+        title: Text(widget.team?.name ?? ''),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: ShadCard(
-              child: InkWell(
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-                onTap: () {
-                  showDialog<void>(
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                        child: Container(
-                          height: size.height * .45,
-                          width: size.width * .45,
-                          padding: EdgeInsets.all(size.width * .025),
-                          child: TextFieldSearchPeople(
-                            team: widget.team,
-                            isAddingToTeam: true,
-                            composition: composition,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-                child: SizedBox(
-                  height: size.height * 0.2,
-                  width: size.width * 0.25,
-                  child: Column(
-                    children: [
-                      if (composition != null)
-                        ...composition!.map(
-                          (e) {
-                            return Text(e.name);
-                          },
-                        ),
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer,
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(12),
-                              topLeft: Radius.circular(12),
-                            ),
-                          ),
-                          child: HugeIcon(
-                            icon: HugeIcons.strokeRoundedAdd02,
-                            color: colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Center(
-                          child: Text(
-                            'Adicionar novo participante.',
-                          ),
-                        ),
-                      ),
-                    ],
+      body: ListenableBuilder(
+        listenable: teamCompositionViewmodel.onFindTeamCompositionById,
+        builder: (context, snapshot) {
+          return teamCompositionViewmodel //
+              .onFindTeamCompositionById
+              .value
+              .when(
+            running: () => const Center(child: CircularProgressIndicator()),
+            data: (value) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 10,
+                children: [
+                  OverflowBar(
+                    spacing: size.width * .025,
+                    children: teamCompositionViewmodel //
+                        .onFindTeamCompositionById
+                        .value
+                        .when(
+                      data: (value) {
+                        return value
+                            .map((element) => TeamUserCard(element: element))
+                            .toList();
+                      },
+                      orElse: () => <Widget>[],
+                    ),
                   ),
-                ),
+                  Center(
+                    child: AddNewUserOnTeamCard(
+                      team: widget.team,
+                      composition: composition,
+                    ),
+                  ),
+                ],
+              );
+            },
+            orElse: () => Center(
+              child: AddNewUserOnTeamCard(
+                team: widget.team,
+                composition: composition,
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

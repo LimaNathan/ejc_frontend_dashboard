@@ -2,11 +2,14 @@ import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.da
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
 import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
+import 'package:ejc_frontend_dashboard/app/utils/images/app_images.dart';
+import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/viewmodels.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/base/base_view_background.dart';
 import 'package:ejc_frontend_dashboard/app/views/teams/components/teams_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -24,11 +27,28 @@ class _TeamListViewState extends State<TeamListView> {
   void initState() {
     super.initState();
 
-    teamViewmodel = context.read<TeamCompositionViewmodel>();
+    teamViewmodel = context.read<TeamCompositionViewmodel>()
+      ..onFetchTeamsCommand.execute()
+      ..onFindTeamCompositionById.addListener(fetchByIDListenter);
 
     teamViewmodel.onFetchAllCompositionCommand
       ..execute()
       ..addListener(fetchAllCompositionsListener);
+  }
+
+  void fetchByIDListenter() {
+    teamViewmodel //
+        .onFindTeamCompositionById
+        .value
+        .when(
+      data: (data) => context.pushNamed(
+        ConstantRoutes.teamCompositionView,
+        extra: teamViewmodel.onFetchTeamsCommand
+            .getCachedSuccess()
+            ?.firstWhere((test) => test.uuid == data.first.teamId),
+      ),
+      orElse: () {},
+    );
   }
 
   void fetchAllCompositionsListener() {
@@ -48,8 +68,10 @@ class _TeamListViewState extends State<TeamListView> {
     super.dispose();
 
     teamViewmodel //
-        .onFetchAllCompositionCommand
-        .removeListener(fetchAllCompositionsListener);
+      ..onFindTeamCompositionById //
+          .removeListener(fetchByIDListenter)
+      ..onFetchAllCompositionCommand
+          .removeListener(fetchAllCompositionsListener);
   }
 
   @override
@@ -57,12 +79,61 @@ class _TeamListViewState extends State<TeamListView> {
     return ListenableBuilder(
       listenable: teamViewmodel.onFetchAllCompositionCommand,
       builder: (context, child) {
-        return teamViewmodel.onFetchAllCompositionCommand.value.when(
+        return teamViewmodel //
+            .onFetchAllCompositionCommand
+            .value
+            .when(
           data: (data) {
             return BaseViewBackground(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  ...data.map((team) {
+                    final teamModel = teamViewmodel //
+                        .onFetchTeamsCommand
+                        .getCachedSuccess();
+
+                    final teamName = teamModel?.firstWhere((test) {
+                      return test.uuid == team.teamId;
+                    }).name;
+                    return ListenableBuilder(
+                      listenable: teamViewmodel.onFetchTeamsCommand,
+                      builder: (context, child) {
+                        final child = ShadCard(
+                          clipBehavior: Clip.none,
+                          padding: EdgeInsets.zero,
+                          radius: BorderRadius.circular(12),
+                          child: InkWell(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
+                            onTap: () {
+                              teamViewmodel //
+                                  .onFindTeamCompositionById
+                                  .execute(team.teamId);
+                            },
+                            child: Column(
+                              children: [
+                                SvgPicture.asset(
+                                  AppImages.getTeamImage(teamName),
+                                ),
+                                Text(teamName ?? '--'),
+                              ],
+                            ),
+                          ),
+                        );
+                        return teamViewmodel //
+                            .onFetchTeamsCommand
+                            .value
+                            .when(
+                          data: (value) => child,
+                          running: () => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          orElse: () => child,
+                        );
+                      },
+                    );
+                  }),
                   if (data.isEmpty) const NoTeamsComponent(),
                   AddTeamCard(compositions: data),
                 ],
@@ -119,6 +190,9 @@ class _AddTeamCardState extends State<AddTeamCard> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return ShadCard(
+      clipBehavior: Clip.none,
+      padding: EdgeInsets.zero,
+      radius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         onTap: () {

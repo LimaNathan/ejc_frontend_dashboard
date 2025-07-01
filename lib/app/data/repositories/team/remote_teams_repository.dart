@@ -27,4 +27,9 @@ class RemoteTeamsRepository implements TeamsRepository {
   AsyncResult<Unit> setUserTeamComposition(TeamComposition team) {
     return _supabaseTeamService.setUserTeamComposition(team);
   }
+
+  @override
+  AsyncResult<Unit> removeUserTeamComposition(String uuid) {
+    return _supabaseTeamService.removeUserTeamComposition(uuid);
+  }
 }

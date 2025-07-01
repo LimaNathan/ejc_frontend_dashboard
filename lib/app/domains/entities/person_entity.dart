@@ -7,11 +7,13 @@ class PersonEntity {
     required this.skills,
     required this.phones,
     required this.uuid,
+    this.equipeAtual,
     this.teams,
     this.photo,
   });
 
   String name;
+  String? equipeAtual;
   String? photo;
   String circle;
   DateTime aniversario;

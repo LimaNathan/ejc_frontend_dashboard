@@ -12,6 +12,7 @@ class DetailedTeamComposition extends TeamComposition {
     required this.name,
     required this.foto,
     required this.telefones,
+
   });
   factory DetailedTeamComposition.fromJson(Map<String, dynamic> json) =>
       DetailedTeamComposition(
@@ -20,6 +21,7 @@ class DetailedTeamComposition extends TeamComposition {
         role: TeamRoleExtension.fromString(json['role'] as String),
         name: json.nestedField<String>('users', 'nome'),
         foto: json.nestedField<String>('users', 'foto'),
+
         telefones: List<String>.from(
           json //
               .nestedField<List<dynamic>>('users', 'telefones'),
@@ -32,6 +34,7 @@ class DetailedTeamComposition extends TeamComposition {
     TeamRole role,
   ) {
     return DetailedTeamComposition(
+      
       teamId: team?.uuid ?? '',
       userId: person.uuid,
       role: role,

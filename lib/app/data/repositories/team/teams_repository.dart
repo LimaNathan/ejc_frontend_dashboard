@@ -11,4 +11,5 @@ abstract class TeamsRepository {
   AsyncResult<List<TeamComposition>> fetchAllCompositions();
 
   AsyncResult<Unit> setUserTeamComposition(TeamComposition team);
+  AsyncResult<Unit> removeUserTeamComposition(String uuid);
 }

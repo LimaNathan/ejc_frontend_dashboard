@@ -1,7 +1,11 @@
 enum TeamRole {
-  casalCoordenador,
-  jovemCoordenador,
-  integrante,
+  casalCoordenador('Casal coordenador'),
+  jovemCoordenador('Jovem coordenador'),
+  integrante('Integrante');
+
+  const TeamRole(this.title);
+
+  final String title;
 }
 
 extension TeamRoleExtension on TeamRole {

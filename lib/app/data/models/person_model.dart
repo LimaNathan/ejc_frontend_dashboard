@@ -13,6 +13,7 @@ class PersonModel extends PersonEntity {
     required super.phones,
     required super.aniversario,
     required super.uuid,
+    super.equipeAtual,
     super.teams,
     super.photo,
   });
@@ -35,6 +36,7 @@ class PersonModel extends PersonEntity {
       name: json['nome'] as String,
       photo: (json['foto'] as String).split(',').last,
       circle: json['circulo'] as String,
+      equipeAtual: json['equipe_atual'] as String,
       ejcNumber: json['ejc_fez'] as String,
       aniversario: DateTime.parse(json['aniversario'] as String),
       skills: List<String>.from(

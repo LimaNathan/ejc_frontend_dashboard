@@ -94,6 +94,22 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
               ? MainAxisAlignment.spaceBetween
               : MainAxisAlignment.end,
           children: [
+            if (widget.person.equipeAtual != null &&
+                widget.person.equipeAtual!.isNotEmpty)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: size.width * .0055),
+                margin: EdgeInsets.only(right: size.width * .0055),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  widget.person.equipeAtual ?? '',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ),
             Text(
               '${widget.person.ejcNumber}º EJC',
               style: textTheme.bodySmall,

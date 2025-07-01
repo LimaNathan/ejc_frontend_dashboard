@@ -29,8 +29,7 @@ class _TeamsMenuState extends State<TeamsMenu> {
   @override
   void initState() {
     super.initState();
-    teamCompositionViewmodel = context.read<TeamCompositionViewmodel>()
-      ..onFetchTeamsCommand.execute();
+    teamCompositionViewmodel = context.read<TeamCompositionViewmodel>();
   }
 
   @override
@@ -70,62 +69,67 @@ class _TeamsMenuState extends State<TeamsMenu> {
             ),
             SizedBox(height: size.height * 0.05),
             ListenableBuilder(
-                listenable: teamCompositionViewmodel.onFetchTeamsCommand,
-                builder: (context, _) {
-                  return teamCompositionViewmodel //
-                      .onFetchTeamsCommand
-                      .value
-                      .when(
-                    data: (data) {
-                      final itens = data.map((toElement) {
-                        return PopupMenuItem<TeamModel>(
+              listenable: teamCompositionViewmodel.onFetchTeamsCommand,
+              builder: (context, _) {
+                return teamCompositionViewmodel //
+                    .onFetchTeamsCommand
+                    .value
+                    .when(
+                  data: (List<TeamModel> data) {
+                    final itens = <PopupMenuEntry<TeamModel>>[];
+
+                    for (final toElement in data) {
+                      itens.add(
+                        PopupMenuItem<TeamModel>(
                           value: toElement,
                           onTap: () => setState(() {
                             widget.team = toElement;
                           }),
                           child: Text(toElement.name),
-                        );
-                      }).toList();
-
-                      return PopupMenuButton<TeamModel>(
-                        offset: const Offset(0, 40),
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Container(
-                          width: size.width * 0.25,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: colorScheme.outline),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                widget.team?.name ?? 'Equipes...',
-                                style: textTheme.bodyMedium,
-                              ),
-                              const Spacer(),
-                              Icon(
-                                HugeIcons.strokeRoundedArrowDown01,
-                                size: 20,
-                                color: colorScheme.onSurface,
-                              ),
-                            ],
-                          ),
-                        ),
-                        itemBuilder: (context) => itens,
                       );
-                    },
-                    orElse: Container.new,
-                  );
-                }),
+                    }
+
+                    return PopupMenuButton<TeamModel>(
+                      offset: const Offset(0, 40),
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Container(
+                        width: size.width * 0.25,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: colorScheme.outline),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              widget.team?.name ?? 'Equipes...',
+                              style: textTheme.bodyMedium,
+                            ),
+                            const Spacer(),
+                            Icon(
+                              HugeIcons.strokeRoundedArrowDown01,
+                              size: 20,
+                              color: colorScheme.onSurface,
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemBuilder: (context) => itens,
+                    );
+                  },
+                  orElse: Container.new,
+                );
+              },
+            ),
             SizedBox(height: size.height * 0.03),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

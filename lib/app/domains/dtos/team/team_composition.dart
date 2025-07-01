@@ -7,11 +7,11 @@ class TeamComposition {
     required this.role,
   });
 
-  factory TeamComposition.fromJson(Map<String, dynamic> json) =>
+  factory TeamComposition.fromJson(Map<String, Object?> json) =>
       TeamComposition(
-        teamId: json['team_id'] as String,
-        userId: json['user_id'] as String,
-        role: TeamRoleExtension.fromString(json['role'] as String),
+        teamId: json['team_id']! as String,
+        userId: json['user_id']! as String,
+        role: TeamRoleExtension.fromString(json['role']! as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -21,6 +21,7 @@ class TeamComposition {
       };
 
   final String teamId;
+
   final String userId;
   final TeamRole role;
 }

@@ -1,4 +1,5 @@
-import 'dart:isolate';
+import 'dart:async';
+import 'dart:developer';
 
 import 'package:ejc_frontend_dashboard/app/data/exceptions/exceptions.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
@@ -20,7 +21,11 @@ class SupabaseTeamService {
             (teams) => teams //
                 .map(TeamModel.fromJson)
                 .toList(),
-          );
+          )
+          .onError((error, _) {
+        log(error.toString());
+        throw AppSupabaseFetchException(error.toString());
+      });
       return Success(response);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
@@ -34,7 +39,11 @@ class SupabaseTeamService {
       await _supabase //
           .client
           .from('team_composition')
-          .insert(members.map((e) => e.toJson()).toList());
+          .insert(members.map((e) => e.toJson()).toList())
+          .onError((error, _) {
+        log(error.toString());
+        throw AppSupabaseFetchException(error.toString());
+      });
 
       return const Success(unit);
     } catch (e) {
@@ -46,13 +55,18 @@ class SupabaseTeamService {
     try {
       final response = await _supabase //
           .client
-          .from('team_compositions')
-          .select()
+          .rpc('get_unique_team_ids')
           .withConverter(
-            (teams) => teams //
-                .map(TeamComposition.fromJson)
-                .toList(),
-          );
+            (converter) => (converter as List)
+                .map((e) => TeamComposition.fromJson(e as Map<String, dynamic>))
+                .toList()
+                .cast<TeamComposition>(),
+          )
+          .onError((error, _) {
+        log(error.toString());
+        throw AppSupabaseFetchException(error.toString());
+      });
+
       return Success(response);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
@@ -64,23 +78,25 @@ class SupabaseTeamService {
   ) async {
     try {
       final response = await _supabase.client
-          .from('team_composition')
+          .from('team_compositions')
           .select(
             'team_id, '
             'user_id, '
             'role, '
             'users(nome, foto, telefones)',
           )
-          .eq(
-            'team_id',
-            teamId,
-          );
+          .eq('team_id', teamId)
+          .withConverter(
+            (converter) => converter //
+                .map(DetailedTeamComposition.fromJson)
+                .toList(),
+          )
+          .onError((error, _) {
+        log(error.toString());
+        throw AppSupabaseFetchException(error.toString());
+      });
 
-      return Success(
-        response //
-            .map(DetailedTeamComposition.fromJson)
-            .toList(),
-      );
+      return Success(response);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
     }
@@ -88,28 +104,80 @@ class SupabaseTeamService {
 
   AsyncResult<Unit> setUserTeamComposition(TeamComposition team) async {
     try {
+      log('adicionando ${team.userId} na equipe ${team.teamId}');
+      final convertedTeam = team.toJson();
       await _supabase.client //
-          .from('team_composition')
-          .insert(team.toJson());
-
-      await Isolate.run(() async {
-        final currentTeam = await _supabase.client
-            .from('teams')
-            .select()
-            .eq('id', team.teamId)
-            .single()
-            .withConverter(TeamModel.fromJson);
-
-        await _supabase.client //
-            .from('users')
-            .update({
-          'equipe_atual': currentTeam.name,
-        }).eq('id', team.userId);
+          .from('team_compositions')
+          .insert(convertedTeam)
+          .onError((handleError, s) {
+        log(handleError.toString());
+        throw AppSupabaseFetchException(handleError.toString());
       });
+
+      log('atualizando pessoa');
+      final currentTeam = await _getTeamById(team.teamId);
+      log('equipe ${team.teamId} encontrada: ${currentTeam.name}');
+      log('atualizando de fato o usuário ${team.userId}');
+
+      await _supabase.client //
+          .from('users')
+          .update({
+            'equipe_atual': currentTeam.name,
+          })
+          .eq('id', team.userId)
+          .onError((error, _) {
+            log(error.toString());
+            throw AppSupabaseFetchException(error.toString());
+          });
 
       return const Success(unit);
     } catch (e) {
       return Failure(AppSupabaseFetchException(e.toString()));
     }
+  }
+
+  AsyncResult<Unit> removeUserTeamComposition(String uuid) async {
+    try {
+      log('removendo $uuid da equipe atual dele');
+
+      await _supabase.client //
+          .from('team_compositions')
+          .delete()
+          .eq('user_id', uuid)
+          .onError((handleError, s) {
+        log(handleError.toString());
+        throw AppSupabaseFetchException(handleError.toString());
+      });
+
+      log('atualizando pessoa');
+
+      await _supabase.client //
+          .from('users')
+          .update({
+            'equipe_atual': '',
+          })
+          .eq('id', uuid)
+          .onError((handleError, s) {
+            log(handleError.toString());
+            throw AppSupabaseFetchException(handleError.toString());
+          });
+
+      return const Success(unit);
+    } catch (e) {
+      return Failure(AppSupabaseFetchException(e.toString()));
+    }
+  }
+
+  Future<TeamModel> _getTeamById(String uuid) async {
+    return _supabase.client
+        .from('teams')
+        .select()
+        .eq('id', uuid)
+        .single()
+        .withConverter(TeamModel.fromJson)
+        .onError((error, _) {
+      log(error.toString());
+      throw AppSupabaseFetchException(error.toString());
+    });
   }
 }
