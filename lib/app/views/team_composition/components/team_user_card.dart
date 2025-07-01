@@ -39,6 +39,7 @@ class _TeamUserCardState extends State<TeamUserCard> {
       width: size.width * .25,
       fit: BoxFit.cover,
     );
+    //
     return Stack(
       clipBehavior: Clip.none,
       children: [
