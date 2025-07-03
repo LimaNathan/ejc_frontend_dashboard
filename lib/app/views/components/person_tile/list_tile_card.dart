@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';

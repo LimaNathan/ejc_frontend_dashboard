@@ -82,9 +82,7 @@ class _TeamsMenuState extends State<TeamsMenu> {
                       itens.add(
                         PopupMenuItem<TeamModel>(
                           value: toElement,
-                          onTap: () => setState(() {
-                            widget.team = toElement;
-                          }),
+                          onTap: () => setState(() => widget.team = toElement),
                           child: Text(toElement.name),
                         ),
                       );

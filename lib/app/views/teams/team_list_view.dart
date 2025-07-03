@@ -150,6 +150,7 @@ class _TeamListViewState extends State<TeamListView> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(12)),
                           onTap: () {
+                            
                             teamViewmodel.onFindTeamCompositionById
                                 .execute(team.teamId);
                           },
