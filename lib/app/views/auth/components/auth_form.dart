@@ -1,9 +1,9 @@
 import 'package:ejc_frontend_dashboard/app/domains/dtos/auth/credentials.dart';
-
 import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({
@@ -23,7 +23,7 @@ class _AuthFormState extends State<AuthForm> {
   @override
   Widget build(BuildContext context) {
     void changeObscureText() => setState(() => obscureText = !obscureText);
-    final size = MediaQuery.sizeOf(context);
+    final theme = ShadTheme.of(context);
 
     void onPressed() {
       final authViewmodel = context.read<AuthViewmodel>();
@@ -36,58 +36,63 @@ class _AuthFormState extends State<AuthForm> {
       );
     }
 
-    return Container(
-      padding: EdgeInsets.all(size.width * 0.025),
-      width: size.width * 0.5,
+    return SizedBox(
+      width: 350,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: size.height * 0.025,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            children: [
-              Text(
-                'Bem vindo(a) de volta, ao SGE',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              Text(
-                'Sistema de Gerenciamento de Encontreiros',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 100),
-                    ),
-              ),
-            ],
+          Image.asset(
+            'assets/logo_ejc.png',
+            height: 40,
           ),
-          TextFormField(
-            key: const ValueKey('user'),
+          const SizedBox(height: 16),
+          Text(
+            'Bem vindo(a) de volta',
+            style: theme.textTheme.h4,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Entre com suas credenciais para continuar',
+            style: theme.textTheme.muted,
+          ),
+          const SizedBox(height: 24),
+          ShadInput(
             controller: emailEC,
-            decoration: const InputDecoration(
-              label: Text('Usuário'),
-            ),
+            placeholder: const Text('Usuário'),
+            trailing: const SizedBox(width: 24),
           ),
-          TextFormField(
-            key: const ValueKey('password'),
-            obscureText: obscureText,
-            controller: passwordEC,
-            onEditingComplete: onPressed,
-            decoration: InputDecoration(
-              label: const Text('Senha'),
-              suffixIcon: IconButton(
-                iconSize: 16,
-                onPressed: changeObscureText,
-                padding: EdgeInsets.zero,
-                icon: HugeIcon(
-                  icon: obscureText
-                      ? HugeIcons.strokeRoundedEye
-                      : HugeIcons.strokeRoundedViewOffSlash,
-                  color: Theme.of(context).colorScheme.primary,
+          const SizedBox(height: 16),
+          SizedBox(
+            width: 350,
+            child: OverflowBar(
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: ShadInput(
+                    obscureText: obscureText,
+                    controller: passwordEC,
+                    onEditingComplete: onPressed,
+                    placeholder: const Text('Senha'),
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: ShadIconButton.ghost(
+                    icon: HugeIcon(
+                      size: 16,
+                      icon: obscureText
+                          ? HugeIcons.strokeRoundedEye
+                          : HugeIcons.strokeRoundedViewOffSlash,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onPressed: changeObscureText,
+                  ),
+                ),
+              ],
             ),
           ),
-          FilledButton(
+          const SizedBox(height: 24),
+          ShadButton(
+            width: double.infinity,
             onPressed: onPressed,
             child: const Text('Entrar'),
           ),

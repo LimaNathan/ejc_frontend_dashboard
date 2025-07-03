@@ -1,13 +1,10 @@
-import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/show_custom_snackbar.dart';
-import 'package:ejc_frontend_dashboard/app/shared/components/custom_snackbar/snackbar_type.dart';
-import 'package:ejc_frontend_dashboard/app/utils/overlays/loading_overlay.dart';
 import 'package:ejc_frontend_dashboard/app/utils/routes/constants/constant_routes.dart';
 import 'package:ejc_frontend_dashboard/app/viewmodel/auth/auth_viewmodel.dart';
 import 'package:ejc_frontend_dashboard/app/views/auth/components/auth_form.dart';
-import 'package:ejc_frontend_dashboard/app/views/auth/components/login_backgroud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -23,8 +20,7 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
 
-    authViewmodel = context //
-        .read<AuthViewmodel>();
+    authViewmodel = context.read<AuthViewmodel>();
 
     authViewmodel.loginCommand.addListener(_listener);
   }
@@ -33,21 +29,24 @@ class _LoginViewState extends State<LoginView> {
     final result = authViewmodel.loginCommand.value;
 
     final isLoading = result.isRunning;
-    WidgetsBinding //
-        .instance
-        .addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (isLoading) {
-        LoadingOverlay.show(context);
+        ShadToaster.of(context).show(
+          const ShadToast(
+            title: Text('Aguarde'),
+            description: Text('Realizando login...'),
+          ),
+        );
       } else {
-        LoadingOverlay.hide();
         result.when(
           data: (value) => context.go(ConstantRoutes.homeView),
           orElse: () {},
           failure: (exception) {
-            showCustomSnackbar(
-              context,
-              message: exception.toString(),
-              type: SnackbarType.error,
+            ShadToaster.of(context).show(
+              ShadToast.destructive(
+                title: const Text('Ops, ocorreu um erro'),
+                description: Text(exception.toString()),
+              ),
             );
           },
         );
@@ -64,17 +63,9 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context) //
-          .colorScheme
-          .onPrimary,
-      body: const Center(
-        child: Row(
-          children: [
-            LoginBackground(),
-            AuthForm(),
-          ],
-        ),
+    return const Scaffold(
+      body: Center(
+        child: AuthForm(),
       ),
     );
   }
