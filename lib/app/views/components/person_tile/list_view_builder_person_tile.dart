@@ -9,11 +9,12 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 class ListViewBuilderPersonTile extends StatelessWidget {
   const ListViewBuilderPersonTile({
     required this.persons,
+    this.afterAddToTeam,
     super.key,
   });
 
   final List<PersonModel>? persons;
-
+  final void Function()? afterAddToTeam;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -47,6 +48,7 @@ class ListViewBuilderPersonTile extends StatelessWidget {
                 return ListTilePersonCard(
                   person: person,
                   circle: circle,
+                  afterAddToTeam: afterAddToTeam,
                 );
               },
             ),

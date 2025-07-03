@@ -24,74 +24,120 @@ class _TeamUserCardState extends State<TeamUserCard> {
   @override
   void initState() {
     super.initState();
-
     teamCompositionViewmodel = context.read<TeamCompositionViewmodel>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final image = Image.memory(
-      base64Decode(widget.element.foto.split(',').last),
-      height: size.height * .15,
-      width: size.width * .25,
-      fit: BoxFit.cover,
-    );
-    //
-    return Stack(
+
+    final photo = widget.element.foto.split(',').last;
+    final imageProvider = MemoryImage(base64Decode(photo));
+
+    return ShadCard(
       clipBehavior: Clip.none,
-      children: [
-        ShadCard(
-          padding: EdgeInsets.only(bottom: size.height * .025),
-          child: Column(
-            children: [
-              InkWell(
-                onTap: () => showImageViewer(context, image.image),
-                child: image,
-              ),
-              Row(
-                spacing: size.width * .0025,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(widget.element.name),
-                  Container(
+      padding: EdgeInsets.zero,
+      radius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        onTap: () => showImageViewer(context, imageProvider),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      color: colorScheme.tertiaryContainer,
-                      borderRadius: BorderRadius.circular(12),
+                      color: colorScheme.primaryContainer,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
                     ),
-                    child: Text(
-                      widget.element.role?.title ?? '',
-                      style: textTheme.bodyMedium,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
+                      child: Image(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ],
-              ),
-              ...widget.element.telefones.map(Text.new),
-            ],
-          ),
-        ),
-        Positioned(
-          top: -10,
-          right: -10,
-          child: IconButton.filled(
-            color: colorScheme.error,
-            onPressed: () {
-              showDialog<void>(
-                context: context,
-                builder: (context) =>
-                    RemoveFromTeamDialog(person: widget.element),
-              );
-            },
-            icon: Icon(
-              HugeIcons.strokeRoundedDelete01,
-              size: 14,
-              color: colorScheme.onError,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.element.name,
+                          style: textTheme.titleSmall,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            widget.element.role?.title ?? '',
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSecondaryContainer,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (widget.element.telefones.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.element.telefones.first,
+                            style: textTheme.bodySmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
+            Positioned(
+              top: -8,
+              right: -8,
+              child: ShadButton.destructive(
+                onPressed: () {
+                  showDialog<void>(
+                    context: context,
+                    builder: (context) => RemoveFromTeamDialog(
+                      person: widget.element,
+                    ),
+                  );
+                },
+                child: Icon(
+                  HugeIcons.strokeRoundedDelete01,
+                  size: 14,
+                  color: colorScheme.onError,
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

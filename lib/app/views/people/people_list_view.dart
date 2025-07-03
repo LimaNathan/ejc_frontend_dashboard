@@ -217,7 +217,18 @@ class _PeopleListViewState extends State<PeopleListView> {
                           if (data.items.isEmpty)
                             const Center(child: NoDataComponent()),
                           if (data.items.isNotEmpty)
-                            ListViewBuilderPersonTile(persons: data.items),
+                            ListViewBuilderPersonTile(
+                              persons: data.items,
+                              afterAddToTeam: () {
+                                context
+                                    .read<PeopleViewmodel>()
+                                    .onFetchPaginatedPeopleCommand
+                                    .execute(
+                                  (page: data.currentPage, size: 7),
+                                  filter,
+                                );
+                              },
+                            ),
                           if (data.items.isNotEmpty)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

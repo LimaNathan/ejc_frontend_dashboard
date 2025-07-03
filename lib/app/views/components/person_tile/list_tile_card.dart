@@ -2,10 +2,14 @@ import 'dart:convert';
 
 import 'package:ejc_frontend_dashboard/app/data/models/person_model.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/detailed_team_composition.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/enum/team_role.dart';
+import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_composition.dart';
 import 'package:ejc_frontend_dashboard/app/domains/dtos/team/team_model.dart';
+import 'package:ejc_frontend_dashboard/app/viewmodel/team_composition/team_composition_viewmodel.dart';
 import 'package:ejc_frontend_dashboard/app/views/components/person_dialog/person_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ListTilePersonCard extends StatefulWidget {
@@ -17,6 +21,7 @@ class ListTilePersonCard extends StatefulWidget {
     this.composition,
     this.onPressed,
     this.team,
+    this.afterAddToTeam,
     super.key,
   });
 
@@ -26,14 +31,73 @@ class ListTilePersonCard extends StatefulWidget {
   final String circle;
   final void Function()? onPressed;
   List<DetailedTeamComposition>? composition;
-
   final bool? isAddingToTeam;
+  final void Function()? afterAddToTeam;
 
   @override
   State<ListTilePersonCard> createState() => _ListTilePersonCardState();
 }
 
 class _ListTilePersonCardState extends State<ListTilePersonCard> {
+  late final TeamCompositionViewmodel teamCompositionViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    teamCompositionViewModel = context.read<TeamCompositionViewmodel>()
+      ..onFetchTeamsCommand.execute();
+  }
+
+  Future<void> _handleAddToTeam() async {
+    final teams =
+        teamCompositionViewModel.onFetchTeamsCommand.getCachedSuccess();
+
+    if (teams != null) {
+      await showShadDialog<void>(
+        context: context,
+        builder: (context) => ShadDialog(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: teams.map((team) {
+              if (team.uuid == null) return const SizedBox();
+              return ShadButton.ghost(
+                onPressed: () async {
+                  await showShadDialog<void>(
+                    context: context,
+                    builder: (context) => ShadDialog(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: TeamRole.values.map((role) {
+                          return ShadButton.ghost(
+                            onPressed: () async {
+                              await teamCompositionViewModel.onAddToTeam
+                                  .execute(
+                                TeamComposition(
+                                  teamId: team.uuid!,
+                                  userId: widget.person.uuid,
+                                  role: role,
+                                ),
+                              );
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              widget.afterAddToTeam?.call();
+                            },
+                            child: Text(role.title),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  );
+                },
+                child: Text(team.name),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -54,13 +118,9 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
         );
       },
       child: ShadCard(
-        // semanticContainer: false,
-        // shadowColor: colorScheme.outline.withValues(alpha: 200),
-        // elevation: 1,
         backgroundColor: colorScheme //
             .surfaceContainerLowest
             .withValues(alpha: 80),
-
         leading: CircleAvatar(
           child: widget.person.photo != null
               ? ClipOval(
@@ -88,7 +148,6 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
             ),
           ),
         ),
-
         trailing: Row(
           mainAxisAlignment: !widget.resumed
               ? MainAxisAlignment.spaceBetween
@@ -126,6 +185,10 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
                   maxLines: 2,
                 ),
               ),
+            ShadButton.ghost(
+              onPressed: _handleAddToTeam,
+              child: const Text('Adicionar equipe'),
+            ),
           ],
         ),
         child: Padding(
@@ -139,78 +202,6 @@ class _ListTilePersonCardState extends State<ListTilePersonCard> {
             ),
           ),
         ),
-
-        /*  child: Container(
-          margin: EdgeInsets.symmetric(
-            vertical: size.height * 0.01,
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: size.width * 0.015,
-            vertical: size.height * 0.015,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                flex: 3,
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      child: widget.person.photo != null
-                          ? ClipOval(
-                              child: Image.memory(
-                                base64Decode(
-                                  widget.person.photo!,
-                                ),
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                            )
-                          : const Icon(
-                              HugeIcons.strokeRoundedUserList,
-                            ),
-                    ),
-                    SizedBox(width: size.width * .02),
-                    Flexible(
-                      child: Text(
-                        widget.person.name,
-                        style: textTheme.labelLarge,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Flexible(
-                flex: size.width < 600 ? 2 : 1,
-                child: Row(
-                  mainAxisAlignment: !widget.resumed
-                      ? MainAxisAlignment.spaceBetween
-                      : MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${widget.person.ejcNumber}º EJC',
-                      style: textTheme.bodySmall,
-                    ),
-                    if (!widget.resumed) SizedBox(width: size.width * .01),
-                    if (!widget.resumed)
-                      SizedBox(
-                        width: size.width * .06,
-                        child: Text(
-                          widget.circle,
-                          style: textTheme.bodySmall,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ), */
       ),
     );
   }

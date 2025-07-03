@@ -80,6 +80,7 @@ class _AddNewUserOnTeamCardState extends State<AddNewUserOnTeamCard> {
                 child: Center(
                   child: Text(
                     'Adicionar novo participante.',
+                    textAlign: TextAlign.justify,
                   ),
                 ),
               ),

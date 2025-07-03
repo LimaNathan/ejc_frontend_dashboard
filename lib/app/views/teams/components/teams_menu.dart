@@ -147,13 +147,12 @@ class _TeamsMenuState extends State<TeamsMenu> {
                   width: size.width * 0.12,
                   child: FilledButton(
                     onPressed: () {
-                      context.pop();
-                      if (widget.compositions.isEmpty) {
-                        context.pushNamed(
+                      context
+                        ..pop()
+                        ..pushNamed(
                           ConstantRoutes.teamCompositionView,
                           extra: widget.team,
                         );
-                      }
                     },
                     child: const Text('Criar equipe'),
                   ),
