@@ -75,17 +75,15 @@ class _AuthFormState extends State<AuthForm> {
                     placeholder: const Text('Senha'),
                   ),
                 ),
-                Expanded(
-                  child: ShadIconButton.ghost(
-                    icon: HugeIcon(
-                      size: 16,
-                      icon: obscureText
-                          ? HugeIcons.strokeRoundedEye
-                          : HugeIcons.strokeRoundedViewOffSlash,
-                      color: theme.colorScheme.primary,
-                    ),
-                    onPressed: changeObscureText,
+                ShadIconButton.ghost(
+                  icon: HugeIcon(
+                    size: 16,
+                    icon: obscureText
+                        ? HugeIcons.strokeRoundedEye
+                        : HugeIcons.strokeRoundedViewOffSlash,
+                    color: theme.colorScheme.primary,
                   ),
+                  onPressed: changeObscureText,
                 ),
               ],
             ),
