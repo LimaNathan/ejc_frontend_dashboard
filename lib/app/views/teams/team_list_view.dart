@@ -108,6 +108,8 @@ class _TeamListViewState extends State<TeamListView> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+
     return BaseViewBackground(
       child: ListenableBuilder(
         listenable: teamViewmodel.onFetchAllCompositionCommand,
@@ -122,67 +124,128 @@ class _TeamListViewState extends State<TeamListView> {
                       NoTeamsComponent(),
                       AddTeamCard(
                         compositions: [],
-                      ), // Pass empty list if no teams
+                      ),
                     ],
                   ),
                 );
               }
-              return Padding(
-                padding: const EdgeInsets.all(16),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: data.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == data.length) {
-                      return AddTeamCard(compositions: data);
-                    }
-                    final team = data[index];
-                    final teamModel =
-                        teamViewmodel.onFetchTeamsCommand.getCachedSuccess();
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  // Calcula a margem lateral baseada no tamanho da tela
+                  final horizontalMargin = size.width <= 1366
+                      ? size.width * .1 // 10% para telas menores
+                      : size.width <= 1920
+                          ? size.width * .2 // 20% para telas médias
+                          : size.width * .25; // 25% para telas grandes
 
-                    return ListenableBuilder(
-                      listenable: teamViewmodel.onFetchTeamsCommand,
-                      builder: (context, child) {
-                        final teamName = teamModel
-                            ?.firstWhere((test) => test.uuid == team.teamId)
-                            .name;
-                        return InkWell(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12)),
-                          onTap: () {
-                            teamViewmodel.onFindTeamCompositionById
-                                .execute(team.teamId);
-                          },
-                          child: ShadCard(
-                            clipBehavior: Clip.none,
-                            padding: EdgeInsets.zero,
-                            radius: BorderRadius.circular(12),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    AppImages.getTeamImage(teamName),
-                                    height: 80,
-                                    width: 80,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(Icons.group, size: 80),
-                                  ),
-                                  Text(teamName ?? '--'),
-                                ],
+                  // Calcula o número de colunas baseado no espaço disponível
+                  final availableWidth = size.width - (horizontalMargin * 2);
+                  const minCardWidth = 160; // Largura mínima do card
+
+                  final crossAxisCount =
+                      (availableWidth / minCardWidth).floor();
+
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalMargin,
+                      vertical: size.height * .02,
+                    ),
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount.clamp(2, 4),
+                        crossAxisSpacing: 24,
+                        mainAxisSpacing: 24,
+                        childAspectRatio: 1.2,
+                      ),
+                      itemCount: data.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == data.length) {
+                          return AddTeamCard(compositions: data);
+                        }
+                        final team = data[index];
+                        final teamModel = teamViewmodel.onFetchTeamsCommand
+                            .getCachedSuccess();
+
+                        return ListenableBuilder(
+                          listenable: teamViewmodel.onFetchTeamsCommand,
+                          builder: (context, child) {
+                            final teamName = teamModel
+                                ?.firstWhere((test) => test.uuid == team.teamId)
+                                .name;
+                            return InkWell(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(12)),
+                              onTap: () {
+                                teamViewmodel.onFindTeamCompositionById
+                                    .execute(team.teamId);
+                              },
+                              child: ShadCard(
+                                clipBehavior: Clip.none,
+                                padding: EdgeInsets.zero,
+                                radius: BorderRadius.circular(12),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: SvgPicture.asset(
+                                        AppImages.getTeamImage(teamName),
+                                        height: 64,
+                                        width: 64,
+                                        placeholderBuilder: (context) =>
+                                            const SizedBox(
+                                          height: 64,
+                                          width: 64,
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        errorBuilder: (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) {
+                                          debugPrint(
+                                            'Erro ao carregar SVG: $error\n$stackTrace',
+                                          );
+                                          final colorScheme =
+                                              Theme.of(context).colorScheme;
+                                          return Container(
+                                            height: 64,
+                                            width: 64,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  colorScheme.primaryContainer,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.groups_rounded,
+                                              size: 32,
+                                              color: colorScheme
+                                                  .onPrimaryContainer,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      teamName ?? '--',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               );
             },
             orElse: () => const Center(

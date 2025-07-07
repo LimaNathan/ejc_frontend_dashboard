@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class TeamCompositionView extends StatefulWidget {
   const TeamCompositionView({
@@ -22,6 +23,8 @@ class TeamCompositionView extends StatefulWidget {
 class _TeamCompositionViewState extends State<TeamCompositionView> {
   late final TeamCompositionViewmodel teamCompositionViewmodel;
   List<DetailedTeamComposition>? composition;
+  final TextEditingController _searchController = TextEditingController();
+  List<DetailedTeamComposition>? _filteredComposition;
 
   @override
   void initState() {
@@ -35,6 +38,22 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
 
     teamCompositionViewmodel.onRemoveUserTeamComposition
         .addListener(_onRemoveListener);
+
+    _searchController.addListener(_filterComposition);
+  }
+
+  void _filterComposition() {
+    final searchTerm = _searchController.text.toLowerCase();
+    setState(() {
+      if (searchTerm.isEmpty) {
+        _filteredComposition = composition;
+      } else {
+        _filteredComposition = composition?.where((member) {
+          final userName = member.name.toLowerCase();
+          return userName.contains(searchTerm);
+        }).toList();
+      }
+    });
   }
 
   void listener() {
@@ -45,6 +64,7 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
       data: (data) {
         setState(() {
           composition = data;
+          _filteredComposition = data;
         });
       },
       orElse: () {},
@@ -67,6 +87,7 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
     teamCompositionViewmodel
       ..onFindTeamCompositionById.removeListener(listener)
       ..onRemoveUserTeamComposition.removeListener(_onRemoveListener);
+    _searchController.dispose();
   }
 
   @override
@@ -91,72 +112,136 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: ListenableBuilder(
-        listenable: teamCompositionViewmodel.onFindTeamCompositionById,
-        builder: (context, snapshot) {
-          return teamCompositionViewmodel //
-              .onFindTeamCompositionById
-              .value
-              .when(
-            running: () => const Center(
-              child: CircularProgressIndicator(),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: size.width * .1,
+              vertical: size.height * .02,
             ),
-            data: (value) {
-              if (value.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.groups_rounded,
-                        size: 48,
-                        color: colorScheme.onSurface,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Nenhum membro na equipe',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 24),
-                      AddNewUserOnTeamCard(
-                        team: widget.team,
-                        composition: composition,
-                      ),
-                    ],
+            child: Row(
+              children: [
+                Expanded(
+                  child: ShadInput(
+                    controller: _searchController,
+                    placeholder: const Text('Buscar membro por nome...'),
                   ),
-                );
-              }
-
-              return Padding(
-                padding: EdgeInsets.all(size.width * .02),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.85,
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
                   ),
-                  itemCount: value.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == value.length) {
-                      return AddNewUserOnTeamCard(
-                        team: widget.team,
-                        composition: composition,
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'Total: ${_filteredComposition?.length ?? 0} membros',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSecondaryContainer,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: teamCompositionViewmodel.onFindTeamCompositionById,
+              builder: (context, snapshot) {
+                return teamCompositionViewmodel //
+                    .onFindTeamCompositionById
+                    .value
+                    .when(
+                  running: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  data: (value) {
+                    if (_filteredComposition?.isEmpty ?? true) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.groups_rounded,
+                              size: 48,
+                              color: colorScheme.onSurface,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Nenhum membro na equipe',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 24),
+                            AddNewUserOnTeamCard(
+                              team: widget.team,
+                              composition: composition,
+                            ),
+                          ],
+                        ),
                       );
                     }
-                    return TeamUserCard(element: value[index]);
+
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Calcula a margem lateral baseada no tamanho da tela
+                        final horizontalMargin = size.width <= 1366
+                            ? size.width * .05 // 5% para telas menores
+                            : size.width <= 1920
+                                ? size.width * .1 // 10% para telas médias
+                                : size.width * .15; // 15% para telas grandes
+
+                        // Calcula o número de colunas baseado no espaço disponível
+                        final availableWidth =
+                            size.width - (horizontalMargin * 2);
+                        const minCardWidth = 300.0; // Largura mínima do card
+                        final crossAxisCount =
+                            (availableWidth / minCardWidth).floor();
+
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalMargin,
+                            vertical: size.height * .02,
+                          ),
+                          child: GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount.clamp(2, 4),
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 0.85,
+                            ),
+                            itemCount: (_filteredComposition?.length ?? 0) + 1,
+                            itemBuilder: (context, index) {
+                              if (index ==
+                                  (_filteredComposition?.length ?? 0)) {
+                                return AddNewUserOnTeamCard(
+                                  team: widget.team,
+                                  composition: composition,
+                                );
+                              }
+                              return TeamUserCard(
+                                element: _filteredComposition![index],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    );
                   },
-                ),
-              );
-            },
-            orElse: () => Center(
-              child: AddNewUserOnTeamCard(
-                team: widget.team,
-                composition: composition,
-              ),
+                  orElse: () => Center(
+                    child: AddNewUserOnTeamCard(
+                      team: widget.team,
+                      composition: composition,
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
