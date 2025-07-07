@@ -30,23 +30,22 @@ class _TeamCompositionViewState extends State<TeamCompositionView> {
     teamCompositionViewmodel = context.read<TeamCompositionViewmodel>()
       ..onFindTeamCompositionById.addListener(listener);
 
-    if (composition == null) {
-      teamCompositionViewmodel.onFindTeamCompositionById
-          .execute(widget.team?.uuid ?? '');
-    }
+    teamCompositionViewmodel.onFindTeamCompositionById
+        .execute(widget.team?.uuid ?? '');
 
     teamCompositionViewmodel.onRemoveUserTeamComposition
         .addListener(_onRemoveListener);
   }
 
   void listener() {
-    composition = teamCompositionViewmodel //
+    teamCompositionViewmodel //
         .onFindTeamCompositionById
         .value
         .when(
       data: (data) {
-        composition = data;
-        return null;
+        setState(() {
+          composition = data;
+        });
       },
       orElse: () {},
     );

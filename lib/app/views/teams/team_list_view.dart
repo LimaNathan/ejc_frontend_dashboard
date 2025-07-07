@@ -56,12 +56,16 @@ class _TeamListViewState extends State<TeamListView> {
                 description: Text('Composição da equipe encontrada.'),
               ),
             );
-            context.pushNamed(
-              ConstantRoutes.teamCompositionView,
-              extra: teamViewmodel.onFetchTeamsCommand
-                  .getCachedSuccess()
-                  ?.firstWhere((test) => test.uuid == data.first.teamId),
-            );
+
+            if (GoRouter.of(context).state?.path !=
+                ConstantRoutes.teamCompositionView) {
+              context.pushNamed(
+                ConstantRoutes.teamCompositionView,
+                extra: teamViewmodel.onFetchTeamsCommand
+                    .getCachedSuccess()
+                    ?.firstWhere((test) => test.uuid == data.first.teamId),
+              );
+            }
           },
           orElse: () {},
           failure: (exception) {
@@ -150,7 +154,6 @@ class _TeamListViewState extends State<TeamListView> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(12)),
                           onTap: () {
-                            
                             teamViewmodel.onFindTeamCompositionById
                                 .execute(team.teamId);
                           },

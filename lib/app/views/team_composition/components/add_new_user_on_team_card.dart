@@ -53,12 +53,6 @@ class _AddNewUserOnTeamCardState extends State<AddNewUserOnTeamCard> {
           width: size.width * 0.25,
           child: Column(
             children: [
-              if (widget.composition != null)
-                ...widget.composition!.map(
-                  (e) {
-                    return Text(e.name);
-                  },
-                ),
               Expanded(
                 child: Container(
                   width: double.infinity,

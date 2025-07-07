@@ -32,7 +32,6 @@ class TeamCompositionViewmodel extends ChangeNotifier {
     return _teamRepository.setUserTeamComposition(team).whenComplete(
       () {
         onFetchAllCompositionCommand.execute();
-        onFindTeamCompositionById.execute(team.teamId);
       },
     );
   }
